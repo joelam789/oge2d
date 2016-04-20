@@ -1,0 +1,51 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "enemy",
+		"count": 3
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 597,
+		"offsetY": 14,
+		"width": 99,
+		"height": 74
+	},
+	
+	"animation":
+	{
+		"action": "fly",
+		"looping": true,
+		"playing": true,
+		"interval": 200,
+		"current": 0,
+		"ticks": 0,
+		"frames": {
+			"fly": [597,14,99,74, 696,14,99,74, 795,14,99,74]
+		}
+	},
+	
+	"display":
+	{
+		"scaleX": 1.5,
+		"scaleY": 1.5
+	},
+	
+	"pool":
+	{
+		"name": "boss",
+		"minIndex": 0,
+		"maxIndex": 2
+	},
+	
+	"enemy":
+	{
+		"hp": 800,
+		"maxhp": 800,
+		"value": 2000
+	}
+	
+}

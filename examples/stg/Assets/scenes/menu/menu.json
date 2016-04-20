@@ -1,0 +1,25 @@
+{
+	"sprites": ["fps1", "title1", "item1", "cursor1", "plot1"],
+	"systems": ["plot", "timer", "motion", "color", "event", "display"],
+	"events":
+	{
+		"onKeyUp": "onKeyUp",
+		"onActive": "onActive",
+		"onInactive": "onInactive"
+	},
+	
+	"preloads":
+	{
+		"musics": ["menu"],
+		"sounds": ["select"]
+	},
+	
+	"display":
+	{
+		"alpha": 1,
+		"red": 0.0,
+		"green": 0.0,
+		"blue": 0.0
+	}
+	
+}

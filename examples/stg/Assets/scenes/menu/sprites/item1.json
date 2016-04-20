@@ -1,0 +1,19 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "menuitem"
+	},
+	
+	"events":
+	{
+		"onMouseUp": "onMouseUp"
+	},
+	
+	"display":
+	{
+		"posX": 270,
+		"posY": 220
+	}
+	
+}

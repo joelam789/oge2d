@@ -1,0 +1,25 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "bullet",
+		"count": 32
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 84,
+		"offsetY": 215,
+		"width": 6,
+		"height": 6
+	},
+	
+	"pool":
+	{
+		"name": "enemy-bullet",
+		"minIndex": 0,
+		"maxIndex": 31
+	}
+	
+}

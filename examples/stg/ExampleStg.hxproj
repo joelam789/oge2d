@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project version="2">
+  <!-- Output SWF options -->
+  <output>
+    <movie outputType="CustomBuild" />
+    <movie input="" />
+    <movie path="project.xml" />
+    <movie fps="60" />
+    <movie width="640" />
+    <movie height="480" />
+    <movie version="1" />
+    <movie minorVersion="0" />
+    <movie platform="Lime" />
+    <movie background="FFFFFF" />
+    <movie preferredSDK=";3;" />
+  </output>
+  <!-- Other classes to be compiled into your SWF -->
+  <classpaths>
+    <class path="C:\HaxeToolkit\haxe\lib\lime\2,9,1" />
+    <class path="C:\HaxeToolkit\haxe\lib\hxsl\2,0,6" />
+    <class path="C:\HaxeToolkit\haxe\lib\format\3,2,1" />
+    <class path="C:\HaxeToolkit\haxe\lib\hscript\2,0,7" />
+    <class path="C:\HaxeToolkit\haxe\lib\unifill\0,4,1" />
+    <class path="Source" />
+    <class path="Export\flash\haxe" />
+  </classpaths>
+  <!-- Build options -->
+  <build>
+    <option directives="lime=2.9.1&#xA;hxsl=2.0.6&#xA;format=3.2.1&#xA;hscript=2.0.7&#xA;unifill=0.4.1&#xA;hscriptPos&#xA;tools=2.9.1&#xA;no-compilation&#xA;web&#xA;display" />
+    <option flashStrict="False" />
+    <option noInlineOnDebug="False" />
+    <option mainClass="ApplicationMain" />
+    <option enabledebug="False" />
+    <option additional="#--macro keep('IntIterator')&#xA;-swf-version 11.6&#xA;--macro include('oge2d.system')&#xA;--macro include('oge2d.library')&#xA;--macro include('example.stg')&#xA;--macro oge2d.build.Macro.compileScripts('Assets')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack.setting')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets1.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack1.setting')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets2.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack2.setting')&#xA;--macro oge2d.build.Macro.cleanup('Assets')&#xA;-swf-version 11.2&#xA;-debug " />
+  </build>
+  <!-- haxelib libraries -->
+  <haxelib>
+    <!-- example: <library name="..." /> -->
+  </haxelib>
+  <!-- Class files to compile (other referenced classes will automatically be included) -->
+  <compileTargets>
+    <!-- example: <compile path="..." /> -->
+  </compileTargets>
+  <!-- Paths to exclude from the Project Explorer tree -->
+  <hiddenPaths>
+    <hidden path="obj" />
+  </hiddenPaths>
+  <!-- Executed before build -->
+  <preBuildCommand>"$(CompilerPath)/haxelib" run lime build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dfdb</preBuildCommand>
+  <!-- Executed after build -->
+  <postBuildCommand alwaysRun="False" />
+  <!-- Other project options -->
+  <options>
+    <option showHiddenPaths="False" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="" />
+  </options>
+  <!-- Plugin storage -->
+  <storage />
+</project>

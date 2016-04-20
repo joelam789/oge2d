@@ -1,0 +1,15 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "cursor"
+	},
+	
+	"display":
+	{
+		"visible": false,
+		"posX": 250,
+		"posY": 220
+	}
+	
+}

@@ -1,0 +1,53 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "enemy",
+		"count": 6
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 334,
+		"offsetY": 367,
+		"width": 33,
+		"height": 32
+	},
+	
+	"animation":
+	{
+		"action": "down",
+		"looping": true,
+		"playing": true,
+		"interval": 200,
+		"current": 0,
+		"ticks": 0,
+		"frames": {
+			"down": [367,367,33,32],
+			"left": [334,367,33,32],
+			"right": [400,367,33,32]
+		}
+	},
+	
+	"stage":
+	{
+		"posX": 0,
+		"posY": 0
+	},
+	
+	"pool":
+	{
+		"name": "enemy4",
+		"minIndex": 0,
+		"maxIndex": 5
+	},
+	
+	"enemy":
+	{
+		"hp": 50,
+		"maxhp": 50,
+		"value": 200
+	}
+	
+}

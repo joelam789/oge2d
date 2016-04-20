@@ -1,0 +1,22 @@
+{
+	"base":
+	{
+		"enabled": false,
+		"template": "label"
+	},
+	
+	"display":
+	{
+		"scaleX": 1.0,
+		"scaleY": 1.0,
+		"posX": 250,
+		"posY": 200,
+		"posZ": 1
+	},
+	
+	"text":
+	{
+		"content": "PAUSED"
+	}
+	
+}

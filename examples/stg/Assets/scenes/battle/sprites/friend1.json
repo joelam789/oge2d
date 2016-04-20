@@ -1,0 +1,28 @@
+{
+	"base":
+	{
+		"enabled": false,
+		"template": "friend",
+		"count": 3
+	},
+	
+	"animation":
+	{
+		"action": "fly"
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"posX": 320,
+		"posY": 300
+	},
+	
+	"pool":
+	{
+		"name": "friend",
+		"minIndex": 0,
+		"maxIndex": 2
+	}
+	
+}

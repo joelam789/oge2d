@@ -1,0 +1,28 @@
+{
+	"preloads":
+	{
+		"images": ["main"]
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"alpha": 1,
+		"red": 1,
+		"green": 1,
+		"blue": 1,
+		"angle": 0,
+		"width": 0,
+		"height": 0,
+		"offsetX": 0,
+		"offsetY": 0,
+		"scaleX": 1.0,
+		"scaleY": 1.0,
+		"anchorX": 0.5,
+		"anchorY": 0.5,
+		"posX": 100,
+		"posY": 100,
+		"posZ": 0
+	}
+	
+}

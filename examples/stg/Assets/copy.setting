@@ -1,0 +1,19 @@
+{
+	"include":
+	[
+		"Assets/games/",
+		"Assets/images/arial",
+		"Assets/jsons/font/arial",
+		"Assets/scenes/preload/",
+		"Assets/sprites/bar",
+		"Assets/sprites/progress"
+	],
+	
+	"extmap":
+	[
+		{
+			"key": ".bin",
+			"value": ".hs"
+		}
+	]
+}

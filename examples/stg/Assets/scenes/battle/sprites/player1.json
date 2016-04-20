@@ -1,0 +1,25 @@
+{
+	"base":
+	{
+		"enabled": false,
+		"template": "player"
+	},
+	
+	"events":
+	{
+		"onCollide": "PlayerSprite.onCollide"
+	},
+	
+	"animation":
+	{
+		"action": "fly"
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"posX": 320,
+		"posY": 300
+	}
+	
+}

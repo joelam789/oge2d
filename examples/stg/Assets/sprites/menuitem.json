@@ -1,0 +1,53 @@
+{
+	"preloads":
+	{
+		"images": ["main"]
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 580,
+		"offsetY": 388,
+		"width": 98,
+		"height": 18
+	},
+	
+	"size":
+	{
+		"x": 0,
+		"y": 0,
+		"u": 1.0,
+		"v": 1.0
+	},
+	
+	"bound":
+	{
+		"left": 0,
+		"top": 0,
+		"right": 98,
+		"bottom": 18
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"alpha": 1,
+		"red": 1,
+		"green": 1,
+		"blue": 1,
+		"angle": 0,
+		"width": 0,
+		"height": 0,
+		"offsetX": 0,
+		"offsetY": 0,
+		"scaleX": 1.0,
+		"scaleY": 1.0,
+		"anchorX": 0,
+		"anchorY": 0,
+		"posX": 0,
+		"posY": 0,
+		"posZ": 0
+	}
+	
+}

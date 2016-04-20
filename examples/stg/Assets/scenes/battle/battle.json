@@ -1,0 +1,53 @@
+{
+	"sprites": ["fps1", "bg1", "plot1", "reborn", "gameover", "player1", "friend1",
+				"icon1", "icon2", "label1", "label2", "label3", "bar1", "info1",
+				"bullet1", "bullet2", "bullet3", "boom1", "boom2", "boom3", "bomb1",
+				"enemy1", "enemy2", "enemy3", "enemy4", "enemy5", "enemy6", "boss1"],
+				
+	"systems": ["plot", "timer", "pool", "stage", "collision", "motion", "color", "animation", "event", "display"],
+	"events":
+	{
+		"onKeyUp": "BattleScene.onKeyUp",
+		"onUpdate": "BattleScene.onUpdate",
+		"onActive": "BattleScene.onActive",
+		"onInactive": "BattleScene.onInactive"
+	},
+	
+	"preloads":
+	{
+		"musics": ["battle", "boss", "win", "lose"],
+		"sounds": ["pause"]
+	},
+	
+	"display":
+	{
+		"alpha": 1,
+		"red": 0.0,
+		"green": 0.0,
+		"blue": 0.0
+	},
+	
+	"stage":
+	{
+		"viewX": 0,
+		"viewY": 6688,
+		"speedX": 0,
+		"speedY": -1,
+		"follow": "",
+		"looping": false,
+		"blocks": ["bg1", "bg1-1", "bg1-2", "bg1-3", "bg1-4", "bg1-5", "bg1-6"],
+		"offsets":[0,0,   0,1024,  0,2048,  0,3072,  0,4096,  0,5120,  0,6144]
+	},
+	
+	"player":
+	{
+		"controllable": false,
+		"progress": 0,
+		"lives": 2,
+		"bombs": 2,
+		"power": 20,
+		"score": 0,
+		"hp": 100
+	}
+	
+}

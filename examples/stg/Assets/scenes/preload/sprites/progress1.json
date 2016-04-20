@@ -1,0 +1,19 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "progress"
+	},
+	
+	"display":
+	{
+		"posX": 120,
+		"posY": 160
+	},
+	
+	"text":
+	{
+		"content": "Loading..."
+	}
+	
+}

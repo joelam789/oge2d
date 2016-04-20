@@ -1,0 +1,17 @@
+{
+	"sprites": ["progress1", "bar1"],
+	"systems": ["event", "display"],
+	"events":
+	{
+		"onActive": "PreloadScene.onActive"
+	},
+	
+	"display":
+	{
+		"alpha": 1,
+		"red": 0.0,
+		"green": 0.0,
+		"blue": 0.0
+	}
+	
+}

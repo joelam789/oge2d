@@ -1,0 +1,20 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "label"
+	},
+	
+	"display":
+	{
+		"posX": 36,
+		"posY": 455,
+		"posZ": 1
+	},
+	
+	"text":
+	{
+		"content": "x1"
+	}
+	
+}

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="Shooting Game" package="ExampleStg" version="1.0.0" company="nobody" />
+	<app main="Main" file="ExampleStg" path="Export" />
+	
+	<window fps="60" width="640" height="480" />
+	<icon path="Assets/icon.svg" />
+	
+	<source path="Source" />
+	
+	<set name="webgl" if="html5" />
+	<haxedef name="webgl" if="html5" />
+	
+	<!-- if need to locate line number -->
+	<haxedef name="hscriptPos" if="debug" />
+	
+	<haxelib name="lime" />
+	<haxelib name="hxsl" />
+	<haxelib name="format" />
+	<haxelib name="hscript" />
+	<haxelib name="unifill" />
+	
+	<!-- 
+	<haxedef name="as3ogg" if="flash" />
+	<haxelib name="stb_ogg_sound" if="flash" />
+	 -->
+	
+	<!-- mini required version for stage3d -->
+	<haxeflag name="-swf-version 11.6" if="flash" />
+	
+	<!-- need to include system/library classes -->
+	<haxeflag name="--macro include('oge2d.system')" />
+	<haxeflag name="--macro include('oge2d.library')" />
+	<haxeflag name="--macro include('example.stg')" />
+	
+	
+	<!-- deploy with no pack files (just copy all asset files directly), and no compiled scripts (need set script.format to "source" in app.json) -->
+	<!--
+	<haxeflag name="--macro oge2d.build.Macro.copyFiles('Assets', 'Export/flash/bin/assets', '.setting;.svg;.ogg')" if="flash"/>
+	<haxeflag name="--macro oge2d.build.Macro.copyFiles('Assets', 'Export/html5/bin/assets', '.setting;.svg;.mp3')" if="html5"/>
+	<haxeflag name="--macro oge2d.build.Macro.copyFiles('Assets', 'Export/windows/cpp/bin/assets', '.setting;.svg;.mp3')" if="windows"/>
+	-->
+	
+	<!-- deploy with pack files -->
+	
+	<!-- compile scripts (need set script.format to "bytecode" in app.json) -->
+	<haxeflag name="--macro oge2d.build.Macro.compileScripts('Assets')"/>
+	
+	<!-- pack files of scene "preload" (need set "packs" in app.json to load it first) -->
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack.setting')" if="flash"/>
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/html5/bin/assets/assets.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack.setting')" if="html5"/>
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/windows/cpp/bin/assets/assets.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack.setting')" if="windows"/>
+	
+	<!-- pack files of scene "menu" -->
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets1.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack1.setting')" if="flash"/>
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/html5/bin/assets/assets1.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack1.setting')" if="html5"/>
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/windows/cpp/bin/assets/assets1.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack1.setting')" if="windows"/>
+	
+	<!-- pack files of scene "battle" -->
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets2.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack2.setting')" if="flash"/>
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/html5/bin/assets/assets2.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack2.setting')" if="html5"/>
+	<haxeflag name="--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/windows/cpp/bin/assets/assets2.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack2.setting')" if="windows"/>
+	
+	<!-- cleanup -->
+	<haxeflag name="--macro oge2d.build.Macro.cleanup('Assets')"/>
+	
+	
+	<!-- still need lime to deploy the global setting file "app.json" -->
+	<assets path="Assets/app.json" rename="assets/app.json"/>
+	
+</project>

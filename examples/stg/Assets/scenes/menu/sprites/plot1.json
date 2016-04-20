@@ -1,0 +1,18 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "plot"
+	},
+	
+	"events":
+	{
+		"onPlot": "onPlot"
+	},
+	
+	"plot":
+	{
+		"enabled": false
+	}
+	
+}

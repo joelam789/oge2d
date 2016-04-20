@@ -1,0 +1,22 @@
+{
+	"include":
+	[
+		"Assets/images/main",
+		"Assets/musics/menu",
+		"Assets/scenes/menu/",
+		"Assets/sounds/select",
+		"Assets/sprites/cursor",
+		"Assets/sprites/fps",
+		"Assets/sprites/menuitem",
+		"Assets/sprites/plot",
+		"Assets/sprites/title"
+	],
+	
+	"extmap":
+	[
+		{
+			"key": ".bin",
+			"value": ".hs"
+		}
+	]
+}

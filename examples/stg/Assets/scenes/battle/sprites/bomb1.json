@@ -1,0 +1,32 @@
+{
+	"base":
+	{
+		"enabled": false,
+		"template": "enemy",
+		"count": 6
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 108,
+		"offsetY": 208,
+		"width": 21,
+		"height": 21
+	},
+	
+	"pool":
+	{
+		"name": "bomb",
+		"minIndex": 0,
+		"maxIndex": 5
+	},
+	
+	"enemy":
+	{
+		"hp": 10,
+		"maxhp": 10,
+		"value": 100
+	}
+	
+}

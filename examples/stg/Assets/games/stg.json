@@ -1,0 +1,36 @@
+{
+	"scenes": ["preload"],
+	"events":
+	{
+		"onInit": "onInit"
+	},
+	"systems": 
+	{
+		"plot":        "oge2d.system.Plot",
+		"timer":       "oge2d.system.Timer",
+		
+		"pool":        "oge2d.system.Pool",
+		"stage":       "oge2d.system.Stage",
+		"color":       "oge2d.system.Color",
+		"motion":      "oge2d.system.Motion",
+		"animation":   "oge2d.system.Animation",
+		"collision":   "oge2d.system.Collision",
+		
+		"text":        "oge2d.system.Text",
+		"event":       "oge2d.system.Event",
+		"display":     "oge2d.system.Display"
+	},
+	"libraries": 
+	{
+		"FPS":         "oge2d.library.common.FPS",
+		"PreloadScene":"example.stg.preload.PreloadScene",
+		"BattleScene": "example.stg.battle.BattleScene",
+		"EnemySprite": "example.stg.battle.EnemySprite",
+		"FriendSprite":"example.stg.battle.FriendSprite",
+		"PlayerSprite":"example.stg.battle.PlayerSprite"
+	},
+	"preloads":
+	{
+		"images": []
+	}
+}

@@ -1,0 +1,49 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "boom",
+		"count": 6
+	},
+	
+	"preloads":
+	{
+		"sounds": ["boom2"]
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 3,
+		"offsetY": 308,
+		"width": 66,
+		"height": 52
+	},
+	
+	"animation":
+	{
+		"action": "play",
+		"looping": false,
+		"playing": false,
+		"interval": 60,
+		"current": 0,
+		"ticks": 0,
+		"frames": {
+			"play": [3,308,66,52, 69,308,66,52, 135,308,66,52, 201,308,66,52, 267,308,66,52, 333,308,66,52, 399,308,66,52]
+		}
+	},
+	
+	"display":
+	{
+		"scaleX": 1.5,
+		"scaleY": 1.5
+	},
+	
+	"pool":
+	{
+		"name": "boss-boom",
+		"minIndex": 0,
+		"maxIndex": 5
+	}
+	
+}

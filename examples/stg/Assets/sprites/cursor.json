@@ -1,0 +1,37 @@
+{
+	"preloads":
+	{
+		"images": ["main"]
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 564,
+		"offsetY": 388,
+		"width": 16,
+		"height": 16
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"alpha": 1,
+		"red": 1,
+		"green": 1,
+		"blue": 1,
+		"angle": 0,
+		"width": 0,
+		"height": 0,
+		"offsetX": 0,
+		"offsetY": 0,
+		"scaleX": 1.0,
+		"scaleY": 1.0,
+		"anchorX": 0.0,
+		"anchorY": 0.0,
+		"posX": 4,
+		"posY": 2,
+		"posZ": 0
+	}
+	
+}

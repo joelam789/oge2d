@@ -1,0 +1,46 @@
+{
+	"preloads":
+	{
+		"images": ["arial"],
+		"jsons":  ["font/arial"]
+	},
+	
+	"graphic":
+	{
+		"image": "arial",
+		"offsetX": 0,
+		"offsetY": 0,
+		"width": 256,
+		"height": 256
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"alpha": 1,
+		"red": 1,
+		"green": 1,
+		"blue": 1,
+		"angle": 0,
+		"width": 0,
+		"height": 0,
+		"offsetX": 0,
+		"offsetY": 0,
+		"scaleX": 0.8,
+		"scaleY": 0.8,
+		"anchorX": 0.0,
+		"anchorY": 0.0,
+		"posX": 4,
+		"posY": 2,
+		"posZ": 0,
+		"updater": "text"
+	},
+	
+	"text":
+	{
+		"font": "arial",
+		"maxLength": 16,
+		"content": "0"
+	}
+	
+}

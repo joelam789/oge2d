@@ -1,0 +1,32 @@
+{
+	"include":
+	[
+		"Assets/images/battlebg",
+		"Assets/jsons/path/",
+		"Assets/musics/battle",
+		"Assets/musics/boss",
+		"Assets/musics/lose",
+		"Assets/musics/win",
+		"Assets/scenes/battle/",
+		"Assets/sounds/boom",
+		"Assets/sounds/hit",
+		"Assets/sounds/pause",
+		"Assets/sounds/shoot",
+		"Assets/sprites/bg",
+		"Assets/sprites/boom",
+		"Assets/sprites/bullet",
+		"Assets/sprites/enemy",
+		"Assets/sprites/friend",
+		"Assets/sprites/icon",
+		"Assets/sprites/label",
+		"Assets/sprites/player"
+	],
+	
+	"extmap":
+	[
+		{
+			"key": ".bin",
+			"value": ".hs"
+		}
+	]
+}

@@ -1,0 +1,76 @@
+{
+	"preloads":
+	{
+		"images": ["main"]
+	},
+	
+	"events":
+	{
+		"onCollide": "FriendSprite.onCollide"
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 366,
+		"offsetY": 249,
+		"width": 66,
+		"height": 46
+	},
+	
+	"animation":
+	{
+		"action": "fly",
+		"looping": true,
+		"playing": true,
+		"interval": 200,
+		"current": 0,
+		"ticks": 0,
+		"frames": {
+			"fly": [366,249,66,46, 432,249,66,46, 498,249,66,46]
+		}
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"alpha": 1,
+		"red": 1,
+		"green": 1,
+		"blue": 1,
+		"angle": 0,
+		"width": 0,
+		"height": 0,
+		"offsetX": 0,
+		"offsetY": 0,
+		"scaleX": 1.0,
+		"scaleY": 1.0,
+		"anchorX": 0.5,
+		"anchorY": 0.5,
+		"posX": 100,
+		"posY": 100,
+		"posZ": 0
+	},
+	
+	"size":
+	{
+		"x": -0.4,
+		"y": -0.45,
+		"u": 0.8,
+		"v": 0.9
+	},
+	
+	"bound":
+	{
+		"left": 0,
+		"top": 0,
+		"right": 60,
+		"bottom": 40
+	},
+	
+	"collision":
+	{
+		"enabled": true
+	}
+	
+}

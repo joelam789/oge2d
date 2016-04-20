@@ -1,0 +1,20 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "label"
+	},
+	
+	"display":
+	{
+		"posX": 430,
+		"posY": 455,
+		"posZ": 1
+	},
+	
+	"text":
+	{
+		"content": "Score: 0"
+	}
+	
+}

@@ -1,0 +1,14 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "title"
+	},
+	
+	"display":
+	{
+		"posX": 182,
+		"posY": 40
+	}
+	
+}

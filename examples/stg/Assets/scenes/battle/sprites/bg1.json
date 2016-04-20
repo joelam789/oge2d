@@ -1,0 +1,31 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "bg",
+		"count": 7
+	},
+	
+	"preloads":
+	{
+		"images": ["battlebg", "battlebg-1", "battlebg-2", "battlebg-3", "battlebg-4", "battlebg-5", "battlebg-6"]
+	},
+	
+	"graphic":
+	{
+		"image": "battlebg",
+		"offsetX": 0,
+		"offsetY": 0,
+		"width": 640,
+		"height": 1024,
+		"shared": false
+	},
+	
+	"display":
+	{
+		"posX": 0,
+		"posY": 0,
+		"posZ": -1
+	}
+	
+}

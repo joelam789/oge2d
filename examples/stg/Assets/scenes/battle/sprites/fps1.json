@@ -1,0 +1,14 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "fps"
+	},
+	
+	"display":
+	{
+		"posX": 4,
+		"posY": 2
+	}
+	
+}

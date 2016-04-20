@@ -1,0 +1,59 @@
+{
+	"events":
+	{
+		"onUpdate": "FPS.onUpdate",
+		"onSceneActive": "FPS.onSceneActive"
+	},
+	
+	"preloads":
+	{
+		"images": ["arial"],
+		"jsons":  ["font/arial"]
+	},
+	
+	"graphic":
+	{
+		"image": "arial",
+		"offsetX": 0,
+		"offsetY": 0,
+		"width": 256,
+		"height": 256
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"alpha": 1,
+		"red": 1,
+		"green": 1,
+		"blue": 1,
+		"angle": 0,
+		"width": 0,
+		"height": 0,
+		"offsetX": 0,
+		"offsetY": 0,
+		"scaleX": 1.0,
+		"scaleY": 1.0,
+		"anchorX": 0.0,
+		"anchorY": 0.0,
+		"posX": 4,
+		"posY": 2,
+		"posZ": 0,
+		"updater": "text"
+	},
+	
+	"fps":
+	{
+		"ticks": 0,
+		"times": 0,
+		"frames": 0
+	},
+	
+	"text":
+	{
+		"font": "arial",
+		"maxLength": 8,
+		"content": "0"
+	}
+	
+}

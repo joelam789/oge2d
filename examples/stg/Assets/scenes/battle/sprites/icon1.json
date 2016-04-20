@@ -1,0 +1,24 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "icon"
+	},
+	
+	"graphic":
+	{
+		"offsetX": 138,
+		"offsetY": 207,
+		"width": 27,
+		"height": 21
+	},
+	
+	"display":
+	{
+		"visible": true,
+		"posX": 12,
+		"posY": 455,
+		"posZ": 1
+	}
+	
+}

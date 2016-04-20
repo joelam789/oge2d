@@ -1,0 +1,32 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "enemy",
+		"count": 4
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 270,
+		"offsetY": 71,
+		"width": 28,
+		"height": 31
+	},
+	
+	"pool":
+	{
+		"name": "enemy6",
+		"minIndex": 0,
+		"maxIndex": 3
+	},
+	
+	"enemy":
+	{
+		"hp": 20,
+		"maxhp": 20,
+		"value": 200
+	}
+	
+}

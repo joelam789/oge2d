@@ -1,0 +1,15 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "bar"
+	},
+	
+	"display":
+	{
+		"posX": 120,
+		"posY": 200,
+		"posZ": 0
+	}
+	
+}

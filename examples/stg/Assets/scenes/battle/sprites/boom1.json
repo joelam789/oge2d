@@ -1,0 +1,43 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "boom",
+		"count": 16
+	},
+	
+	"preloads":
+	{
+		"sounds": ["boom1"]
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 69,
+		"offsetY": 170,
+		"width": 33,
+		"height": 32
+	},
+	
+	"animation":
+	{
+		"action": "play",
+		"looping": false,
+		"playing": false,
+		"interval": 60,
+		"current": 0,
+		"ticks": 0,
+		"frames": {
+			"play": [69,170,33,32, 102,170,33,32, 135,170,33,32, 168,170,33,32, 201,170,33,32, 234,170,33,32]
+		}
+	},
+	
+	"pool":
+	{
+		"name": "small-boom",
+		"minIndex": 0,
+		"maxIndex": 15
+	}
+	
+}
