@@ -1,4 +1,4 @@
-# A shooting game example for oge2d
+# shooting game example for oge2d
 
 - A playable version could be found here
 
