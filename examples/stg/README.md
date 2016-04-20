@@ -1,16 +1,18 @@
-# a shooting game example for oge2d
+# A shooting game example for oge2d
 
-Find a playable one here
+- A playable version could be found here
 
-https://cdn.rawgit.com/joelam789/oge2d/master/examples/stg/Export/html5/bin/index.html
+  http://rawgit.com/joelam789/oge2d/master/examples/stg/Export/html5/bin/index.html
 
-Start the game - Enter
+- Just support playing with keyboard for now
 
-Move the plane - Arrow keys
+  Start the game - Enter
 
-Normal shooting - Left Control
+  Move the plane - Arrow keys
 
-Use the bombs - Left Shift
+  Normal shooting - Left Control
 
-Pause game - Space
+  Use the bombs - Left Shift
+
+  Pause game - Space
 
