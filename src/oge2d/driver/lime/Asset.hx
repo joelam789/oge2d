@@ -71,6 +71,9 @@ class Asset {
 		
 		if (_buf != null) return; // should have initialized already
 		
+		MusicSource.init();
+		SoundSource.init();
+		
 		#if flash
 		try {
 			var objectID: String = flash.external.ExternalInterface.objectID;
@@ -259,7 +262,7 @@ class Asset {
 							music: new MusicSource(),
 							callback: callback
 						};
-						result.music.init(src.data);
+						result.music.load(src.data);
 						return result;
 					},
 					callback: function(rsl) {
@@ -278,7 +281,7 @@ class Asset {
 				#else
 				
 				var result = new MusicSource();
-				result.init(bytes, function() {
+				result.load(bytes, function() {
 					if (result.state <= 0) {
 						if (callback != null) callback(null);
 					} else {
@@ -313,7 +316,7 @@ class Asset {
 							sound: new SoundSource(),
 							callback: callback
 						};
-						result.sound.init(src.data);
+						result.sound.load(src.data);
 						return result;
 					},
 					callback: function(rsl) {
@@ -332,7 +335,7 @@ class Asset {
 				#else
 				
 				var result = new SoundSource();
-				result.init(bytes, function() {
+				result.load(bytes, function() {
 					if (result.state <= 0) {
 						if (callback != null) callback(null);
 					} else {
@@ -440,7 +443,7 @@ class Asset {
 		var bytes = Assets.getBytes(url);
 		if (bytes == null) return null;
 		music = new MusicSource();
-		music.init(bytes);
+		music.load(bytes);
 		if (music.state <= 0) return null;
 		_musics.set(url, music);
 		return music;
@@ -452,7 +455,7 @@ class Asset {
 		var bytes = Assets.getBytes(url);
 		if (bytes == null) return null;
 		sound = new SoundSource();
-		sound.init(bytes);
+		sound.load(bytes);
 		if (sound.state <= 0) return null;
 		_sounds.set(url, sound);
 		return sound;
@@ -594,7 +597,7 @@ class Asset {
 					}
 					#else
 					music = new MusicSource();
-					music.init(Asset.unzip(entry));
+					music.load(Asset.unzip(entry));
 					if (music.state <= 0) music = null;
 					#end
 					if (music != null) _musics.set(fileName, music);
@@ -618,7 +621,7 @@ class Asset {
 					}
 					#else
 					sound = new SoundSource();
-					sound.init(Asset.unzip(entry));
+					sound.load(Asset.unzip(entry));
 					if (sound.state <= 0) sound = null;
 					#end
 					if (sound != null) _sounds.set(fileName, sound);
@@ -688,7 +691,7 @@ class Asset {
 			} else if (fileName.indexOf("musics/") >= 0) {
 				#if html5
 				var music = new MusicSource();
-				music.init(Asset.unzip(pending[fileName]), function() {
+				music.load(Asset.unzip(pending[fileName]), function() {
 					if (music.state <= 0) music = null;
 					else _musics.set(fileName, music);
 					_queue.remove(fileName);
@@ -709,7 +712,7 @@ class Asset {
 								if (_queue.length <= 0 && onComplete != null) onComplete();
 							}
 						};
-						result.music.init(Asset.unzip(src.data));
+						result.music.load(Asset.unzip(src.data));
 						return result;
 					},
 					callback: function(rsl) {
@@ -734,7 +737,7 @@ class Asset {
 			} else if (fileName.indexOf("sounds/") >= 0) {
 				#if html5
 				var sound = new SoundSource();
-				sound.init(Asset.unzip(pending[fileName]), function() {
+				sound.load(Asset.unzip(pending[fileName]), function() {
 					if (sound.state <= 0) sound = null;
 					else _sounds.set(fileName, sound);
 					_queue.remove(fileName);
@@ -755,7 +758,7 @@ class Asset {
 								if (_queue.length <= 0 && onComplete != null) onComplete();
 							}
 						};
-						result.sound.init(Asset.unzip(src.data));
+						result.sound.load(Asset.unzip(src.data));
 						return result;
 					},
 					callback: function(rsl) {

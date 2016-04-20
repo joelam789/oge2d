@@ -38,7 +38,7 @@ class SoundSource {
 	
 	#if html5
 	private static var _audioContextClass: Dynamic = null;
-	private var _context: AudioContext = null;
+	private static var _context: AudioContext = null;
 	private var _sound: AudioBuffer = null;
 	private var _channels: List<AudioBufferSourceNode> = new List<AudioBufferSourceNode>();
 	private var _gains: Map<AudioBufferSourceNode, GainNode> = new Map<AudioBufferSourceNode, GainNode>();
@@ -62,10 +62,7 @@ class SoundSource {
 	
 	#if html5
 	
-	public function new() {
-		_context = null;
-		_sound = null;
-		state = STATE_UNPLAYABLE;
+	public static function init() {
 		if (SoundSource._audioContextClass == null) {
 			SoundSource._audioContextClass = Reflect.field(Browser.window, "AudioContext");
 			if (SoundSource._audioContextClass == null) {
@@ -74,7 +71,14 @@ class SoundSource {
 		}
 		if (SoundSource._audioContextClass == null) {
 			trace("WebAudio not supported");
+		} else if (SoundSource._context == null) {
+			SoundSource._context = cast Type.createInstance(SoundSource._audioContextClass, []);
 		}
+	}
+	
+	public function new() {
+		_sound = null;
+		state = STATE_UNPLAYABLE;
 	}
 	
 	function set_volume(value: Float): Float {
@@ -89,14 +93,7 @@ class SoundSource {
 		return volume;
 	}
 	
-	public function init(bytes: Bytes, ?callback: Void->Void): Void {
-		try {
-			if (SoundSource._audioContextClass != null)
-				_context = cast Type.createInstance(SoundSource._audioContextClass, []);
-		} catch(e:Dynamic) {
-			_context = null;
-			trace("Failed to create Web Audio Context: " + e);
-		}
+	public function load(bytes: Bytes, ?callback: Void->Void): Void {
 		if (_context == null) {
 			if (callback != null) callback();
 			return;
@@ -130,9 +127,10 @@ class SoundSource {
 			turnoff(channel);
 		};
 		var self_ = this;
+		var clazz_ = SoundSource;
 		var gain: GainNode = null;
-		if (untyped __js__("self_._context").createGain != null) gain = _context.createGain();
-		else gain = untyped __js__("self_._context").createGainNode();
+		if (untyped __js__("clazz_._context").createGain != null) gain = _context.createGain();
+		else gain = untyped __js__("clazz_._context").createGainNode();
 		if (gain == null) return;
 		channel.connect(gain);
 		gain.connect(_context.destination);
@@ -166,16 +164,15 @@ class SoundSource {
 	public function dispose(): Void {
 		stop();
 		state = STATE_UNPLAYABLE;
-		var self_ = this;
-		if (_context != null) {
-			try { untyped __js__("self_._context").close(); } catch(e:Dynamic) { }
-		}
 		if (_sound != null) _sound = null;
-		if (_context != null) _context = null;
 		_channels.clear();
 	}
 	
 	#elseif flash
+	
+	public static function init() {
+		
+	}
 	
 	public function new() {
 		_sound = null;
@@ -197,7 +194,7 @@ class SoundSource {
 		return volume;
 	}
 	
-	public function init(bytes: Bytes, ?callback: Void->Void): Void {
+	public function load(bytes: Bytes, ?callback: Void->Void): Void {
 		#if as3ogg
 		_sound = new VorbisSound(bytes);
 		#else
@@ -247,6 +244,10 @@ class SoundSource {
 	
 	#else
 	
+	public static function init() {
+		
+	}
+	
 	public function new() {
 		_sound = null;
 		state = STATE_UNPLAYABLE;
@@ -264,7 +265,7 @@ class SoundSource {
 		return volume;
 	}
 	
-	public function init(bytes: Bytes, ?callback: Void->Void): Void {
+	public function load(bytes: Bytes, ?callback: Void->Void): Void {
 		_sound = AudioBuffer.fromBytes(bytes);
 		if (_sound != null) state = STATE_READY;
 		if (callback != null) callback();

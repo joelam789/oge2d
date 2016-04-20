@@ -32,7 +32,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "3", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "22", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -19583,6 +19583,8 @@ $hxClasses["oge2d.driver.lime.Asset"] = oge2d_driver_lime_Asset;
 oge2d_driver_lime_Asset.__name__ = ["oge2d","driver","lime","Asset"];
 oge2d_driver_lime_Asset.init = function() {
 	if(oge2d_driver_lime_Asset._buf != null) return;
+	oge2d_driver_lime_MusicSource.init();
+	oge2d_driver_lime_SoundSource.init();
 	oge2d_driver_lime_Asset._buf = haxe_io_Bytes.alloc(65536);
 };
 oge2d_driver_lime_Asset.setKey = function(key) {
@@ -19600,8 +19602,8 @@ oge2d_driver_lime_Asset.loadBytes = function(url,callback) {
 		req.load(url).onComplete(function(data) {
 			callback(data);
 		}).onError(function(err) {
-			haxe_Log.trace("Failed to load data from url: " + url,{ fileName : "Asset.hx", lineNumber : 129, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
-			haxe_Log.trace(err,{ fileName : "Asset.hx", lineNumber : 129, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
+			haxe_Log.trace("Failed to load data from url: " + url,{ fileName : "Asset.hx", lineNumber : 132, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
+			haxe_Log.trace(err,{ fileName : "Asset.hx", lineNumber : 132, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
 			callback(null);
 		});
 	} else callback(null);
@@ -19632,7 +19634,7 @@ oge2d_driver_lime_Asset.loadJsonObject = function(url,callback) {
 				result = JSON.parse(text);
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 214, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 217, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
 			}
 			if(callback != null) callback(result);
 		}
@@ -19653,7 +19655,7 @@ oge2d_driver_lime_Asset.loadJsonData = function(url,callback) {
 				result = JSON.parse(bytes.toString());
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 234, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 237, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
 			}
 			if(result != null) oge2d_driver_lime_Asset._jsons.set(url,result);
 			if(callback != null) callback(result);
@@ -19671,7 +19673,7 @@ oge2d_driver_lime_Asset.loadMusic = function(url,callback) {
 			if(callback != null) callback(null);
 		} else {
 			var result = new oge2d_driver_lime_MusicSource();
-			result.init(bytes,function() {
+			result.load(bytes,function() {
 				if(result.state <= 0) {
 					if(callback != null) callback(null);
 				} else {
@@ -19693,7 +19695,7 @@ oge2d_driver_lime_Asset.loadSound = function(url,callback) {
 			if(callback != null) callback(null);
 		} else {
 			var result = new oge2d_driver_lime_SoundSource();
-			result.init(bytes,function() {
+			result.load(bytes,function() {
 				if(result.state <= 0) {
 					if(callback != null) callback(null);
 				} else {
@@ -19752,7 +19754,7 @@ oge2d_driver_lime_Asset.getMusic = function(url) {
 	var bytes = lime_Assets.getBytes(url);
 	if(bytes == null) return null;
 	music = new oge2d_driver_lime_MusicSource();
-	music.init(bytes);
+	music.load(bytes);
 	if(music.state <= 0) return null;
 	oge2d_driver_lime_Asset._musics.set(url,music);
 	return music;
@@ -19763,7 +19765,7 @@ oge2d_driver_lime_Asset.getSound = function(url) {
 	var bytes = lime_Assets.getBytes(url);
 	if(bytes == null) return null;
 	sound = new oge2d_driver_lime_SoundSource();
-	sound.init(bytes);
+	sound.load(bytes);
 	if(sound.state <= 0) return null;
 	oge2d_driver_lime_Asset._sounds.set(url,sound);
 	return sound;
@@ -19924,7 +19926,7 @@ oge2d_driver_lime_Asset.loadPack = function(bytes,onProgress,onComplete) {
 			};
 		})(fileName2)); else if(fileName2[0].indexOf("musics/") >= 0) {
 			var music1 = [new oge2d_driver_lime_MusicSource()];
-			music1[0].init(oge2d_driver_lime_Asset.unzip(__map_reserved[fileName2[0]] != null?pending.getReserved(fileName2[0]):pending.h[fileName2[0]]),(function(music1,fileName2) {
+			music1[0].load(oge2d_driver_lime_Asset.unzip(__map_reserved[fileName2[0]] != null?pending.getReserved(fileName2[0]):pending.h[fileName2[0]]),(function(music1,fileName2) {
 				return function() {
 					if(music1[0].state <= 0) music1[0] = null; else oge2d_driver_lime_Asset._musics.set(fileName2[0],music1[0]);
 					oge2d_driver_lime_Asset._queue.remove(fileName2[0]);
@@ -19934,7 +19936,7 @@ oge2d_driver_lime_Asset.loadPack = function(bytes,onProgress,onComplete) {
 			})(music1,fileName2));
 		} else if(fileName2[0].indexOf("sounds/") >= 0) {
 			var sound1 = [new oge2d_driver_lime_SoundSource()];
-			sound1[0].init(oge2d_driver_lime_Asset.unzip(__map_reserved[fileName2[0]] != null?pending.getReserved(fileName2[0]):pending.h[fileName2[0]]),(function(sound1,fileName2) {
+			sound1[0].load(oge2d_driver_lime_Asset.unzip(__map_reserved[fileName2[0]] != null?pending.getReserved(fileName2[0]):pending.h[fileName2[0]]),(function(sound1,fileName2) {
 				return function() {
 					if(sound1[0].state <= 0) sound1[0] = null; else oge2d_driver_lime_Asset._sounds.set(fileName2[0],sound1[0]);
 					oge2d_driver_lime_Asset._queue.remove(fileName2[0]);
@@ -19983,7 +19985,7 @@ oge2d_driver_lime_Asset.loadFiles = function(files,onProgress,onComplete) {
 					if(oge2d_driver_lime_Asset._queue.length <= 0 && onComplete != null) onComplete();
 				};
 			})(fileName1)); else {
-				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 813, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
+				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 816, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
 				oge2d_driver_lime_Asset._queue.remove(fileName1[0]);
 				if(onProgress != null) onProgress(files.length - oge2d_driver_lime_Asset._queue.length,files.length);
 				if(oge2d_driver_lime_Asset._queue.length <= 0 && onComplete != null) onComplete();
@@ -20149,26 +20151,25 @@ var oge2d_driver_lime_MusicSource = function() {
 	this._gain = null;
 	this._channel = null;
 	this._sound = null;
-	this._context = null;
 	this._times = 1;
 	this.volume = 1;
 	this.state = 0;
-	this._context = null;
 	this._sound = null;
 	this.state = 0;
+};
+$hxClasses["oge2d.driver.lime.MusicSource"] = oge2d_driver_lime_MusicSource;
+oge2d_driver_lime_MusicSource.__name__ = ["oge2d","driver","lime","MusicSource"];
+oge2d_driver_lime_MusicSource.init = function() {
 	if(oge2d_driver_lime_MusicSource._audioContextClass == null) {
 		oge2d_driver_lime_MusicSource._audioContextClass = Reflect.field(window,"AudioContext");
 		if(oge2d_driver_lime_MusicSource._audioContextClass == null) oge2d_driver_lime_MusicSource._audioContextClass = Reflect.field(window,"webkitAudioContext");
 	}
-	if(oge2d_driver_lime_MusicSource._audioContextClass == null) haxe_Log.trace("WebAudio not supported",{ fileName : "MusicSource.hx", lineNumber : 101, className : "oge2d.driver.lime.MusicSource", methodName : "new"});
+	if(oge2d_driver_lime_MusicSource._audioContextClass == null) haxe_Log.trace("WebAudio not supported",{ fileName : "MusicSource.hx", lineNumber : 98, className : "oge2d.driver.lime.MusicSource", methodName : "init"}); else if(oge2d_driver_lime_MusicSource._context == null) oge2d_driver_lime_MusicSource._context = Type.createInstance(oge2d_driver_lime_MusicSource._audioContextClass,[]);
 };
-$hxClasses["oge2d.driver.lime.MusicSource"] = oge2d_driver_lime_MusicSource;
-oge2d_driver_lime_MusicSource.__name__ = ["oge2d","driver","lime","MusicSource"];
 oge2d_driver_lime_MusicSource.prototype = {
 	state: null
 	,volume: null
 	,_times: null
-	,_context: null
 	,_sound: null
 	,_channel: null
 	,_gain: null
@@ -20201,29 +20202,22 @@ oge2d_driver_lime_MusicSource.prototype = {
 			this.volume = volumeValue;
 		} catch( e ) {
 			if (e instanceof js__$Boot_HaxeError) e = e.val;
-			haxe_Log.trace("Failed to set volume: " + Std.string(e),{ fileName : "MusicSource.hx", lineNumber : 112, className : "oge2d.driver.lime.MusicSource", methodName : "set_volume"});
+			haxe_Log.trace("Failed to set volume: " + Std.string(e),{ fileName : "MusicSource.hx", lineNumber : 116, className : "oge2d.driver.lime.MusicSource", methodName : "set_volume"});
 		}
 		return this.volume;
 	}
-	,init: function(bytes,callback) {
+	,load: function(bytes,callback) {
 		var _g = this;
-		try {
-			if(oge2d_driver_lime_MusicSource._audioContextClass != null) this._context = Type.createInstance(oge2d_driver_lime_MusicSource._audioContextClass,[]);
-		} catch( e ) {
-			if (e instanceof js__$Boot_HaxeError) e = e.val;
-			this._context = null;
-			haxe_Log.trace("Failed to create Web Audio Context: " + Std.string(e),{ fileName : "MusicSource.hx", lineNumber : 123, className : "oge2d.driver.lime.MusicSource", methodName : "init"});
-		}
-		if(this._context == null) {
+		if(oge2d_driver_lime_MusicSource._context == null) {
 			if(callback != null) callback();
 			return;
 		}
-		this._context.decodeAudioData(bytes.b.bufferValue,function(buf) {
+		oge2d_driver_lime_MusicSource._context.decodeAudioData(bytes.b.bufferValue,function(buf) {
 			_g._sound = buf;
 			if(_g._sound != null && _g._sound.length > 0) _g.state = 1;
 			if(callback != null) callback();
 		},function() {
-			haxe_Log.trace("Failed to decode Web Audio Data",{ fileName : "MusicSource.hx", lineNumber : 134, className : "oge2d.driver.lime.MusicSource", methodName : "init"});
+			haxe_Log.trace("Failed to decode Web Audio Data",{ fileName : "MusicSource.hx", lineNumber : 131, className : "oge2d.driver.lime.MusicSource", methodName : "load"});
 			if(callback != null) callback();
 		});
 	}
@@ -20239,10 +20233,10 @@ oge2d_driver_lime_MusicSource.prototype = {
 	}
 	,turnon: function() {
 		var _g = this;
-		if(this._context == null) return;
+		if(oge2d_driver_lime_MusicSource._context == null) return;
 		if(this._sound == null || this._sound.length <= 0) return;
 		this.turnoff();
-		this._channel = this._context.createBufferSource();
+		this._channel = oge2d_driver_lime_MusicSource._context.createBufferSource();
 		if(this._channel == null) return;
 		this._channel.buffer = this._sound;
 		this._channel.onended = function() {
@@ -20254,32 +20248,33 @@ oge2d_driver_lime_MusicSource.prototype = {
 						_g.state = 4;
 					} else {
 						_g._pauseTime = 0;
-						_g._startTime = _g._context.currentTime;
+						_g._startTime = oge2d_driver_lime_MusicSource._context.currentTime;
 						_g.turnon();
 					}
 				} else {
 					_g._pauseTime = 0;
-					_g._startTime = _g._context.currentTime;
+					_g._startTime = oge2d_driver_lime_MusicSource._context.currentTime;
 					_g.turnon();
 				}
 			}
 		};
 		var self_ = this;
-		if(self_._context.createGain != null) this._gain = this._context.createGain(); else this._gain = self_._context.createGainNode();
+		var clazz_ = oge2d_driver_lime_MusicSource;
+		if(clazz_._context.createGain != null) this._gain = oge2d_driver_lime_MusicSource._context.createGain(); else this._gain = clazz_._context.createGainNode();
 		if(this._gain == null) return;
 		this._channel.connect(this._gain);
-		this._gain.connect(this._context.destination);
+		this._gain.connect(oge2d_driver_lime_MusicSource._context.destination);
 		this._gain.gain.value = this.volume;
 		if(this._pauseTime > 0) {
-			this._startTime = this._context.currentTime - this._pauseTime;
+			this._startTime = oge2d_driver_lime_MusicSource._context.currentTime - this._pauseTime;
 			if(Reflect.field(this._channel,"start") != null) this._channel.start(0,this._pauseTime); else self_._channel.noteGrainOn(0,this._pauseTime,this._channel.buffer.duration);
 		} else {
-			this._startTime = this._context.currentTime;
+			this._startTime = oge2d_driver_lime_MusicSource._context.currentTime;
 			if(Reflect.field(this._channel,"start") != null) this._channel.start(0); else self_._channel.noteGrainOn(0,0,this._channel.buffer.duration);
 		}
 	}
 	,play: function(times) {
-		if(this._context == null) return;
+		if(oge2d_driver_lime_MusicSource._context == null) return;
 		if(this._sound == null || this._sound.length <= 0) return;
 		if(this.state == 0 || this.state == 2) return; else if(this.state == 1 || this.state == 3 || this.state == 4) {
 			if(times != null) if(times <= 0) this._times = -1; else this._times = times; else if(this.state == 1) this._times = -1;
@@ -20289,7 +20284,7 @@ oge2d_driver_lime_MusicSource.prototype = {
 	}
 	,stop: function() {
 		if(this.state == 0) return;
-		if(this._context == null || this._channel == null) return;
+		if(oge2d_driver_lime_MusicSource._context == null || this._channel == null) return;
 		var self_ = this;
 		if(Reflect.field(this._channel,"stop") != null) this._channel.stop(0); else if(Reflect.field(this._channel,"noteOff") != null) try {
 			self_._channel.noteOff(0);
@@ -20303,8 +20298,8 @@ oge2d_driver_lime_MusicSource.prototype = {
 	}
 	,pause: function() {
 		if(this.state != 2) return;
-		if(this._context == null || this._channel == null) return;
-		this._pauseTime = this._context.currentTime - this._startTime;
+		if(oge2d_driver_lime_MusicSource._context == null || this._channel == null) return;
+		this._pauseTime = oge2d_driver_lime_MusicSource._context.currentTime - this._startTime;
 		var self_ = this;
 		if(Reflect.field(this._channel,"stop") != null) this._channel.stop(0); else if(Reflect.field(this._channel,"noteOff") != null) try {
 			self_._channel.noteOff(0);
@@ -20324,14 +20319,7 @@ oge2d_driver_lime_MusicSource.prototype = {
 	,dispose: function() {
 		this.stop();
 		this.state = 0;
-		var self_ = this;
-		if(this._context != null) try {
-			self_._context.close();
-		} catch( e ) {
-			if (e instanceof js__$Boot_HaxeError) e = e.val;
-		}
 		if(this._sound != null) this._sound = null;
-		if(this._context != null) this._context = null;
 	}
 	,__class__: oge2d_driver_lime_MusicSource
 };
@@ -20474,24 +20462,23 @@ var oge2d_driver_lime_SoundSource = function() {
 	this._gains = new haxe_ds_ObjectMap();
 	this._channels = new List();
 	this._sound = null;
-	this._context = null;
 	this.volume = 1;
 	this.state = 0;
-	this._context = null;
 	this._sound = null;
 	this.state = 0;
+};
+$hxClasses["oge2d.driver.lime.SoundSource"] = oge2d_driver_lime_SoundSource;
+oge2d_driver_lime_SoundSource.__name__ = ["oge2d","driver","lime","SoundSource"];
+oge2d_driver_lime_SoundSource.init = function() {
 	if(oge2d_driver_lime_SoundSource._audioContextClass == null) {
 		oge2d_driver_lime_SoundSource._audioContextClass = Reflect.field(window,"AudioContext");
 		if(oge2d_driver_lime_SoundSource._audioContextClass == null) oge2d_driver_lime_SoundSource._audioContextClass = Reflect.field(window,"webkitAudioContext");
 	}
-	if(oge2d_driver_lime_SoundSource._audioContextClass == null) haxe_Log.trace("WebAudio not supported",{ fileName : "SoundSource.hx", lineNumber : 76, className : "oge2d.driver.lime.SoundSource", methodName : "new"});
+	if(oge2d_driver_lime_SoundSource._audioContextClass == null) haxe_Log.trace("WebAudio not supported",{ fileName : "SoundSource.hx", lineNumber : 73, className : "oge2d.driver.lime.SoundSource", methodName : "init"}); else if(oge2d_driver_lime_SoundSource._context == null) oge2d_driver_lime_SoundSource._context = Type.createInstance(oge2d_driver_lime_SoundSource._audioContextClass,[]);
 };
-$hxClasses["oge2d.driver.lime.SoundSource"] = oge2d_driver_lime_SoundSource;
-oge2d_driver_lime_SoundSource.__name__ = ["oge2d","driver","lime","SoundSource"];
 oge2d_driver_lime_SoundSource.prototype = {
 	state: null
 	,volume: null
-	,_context: null
 	,_sound: null
 	,_channels: null
 	,_gains: null
@@ -20514,29 +20501,22 @@ oge2d_driver_lime_SoundSource.prototype = {
 			this.volume = volumeValue;
 		} catch( e ) {
 			if (e instanceof js__$Boot_HaxeError) e = e.val;
-			haxe_Log.trace("Failed to set volume: " + Std.string(e),{ fileName : "SoundSource.hx", lineNumber : 87, className : "oge2d.driver.lime.SoundSource", methodName : "set_volume"});
+			haxe_Log.trace("Failed to set volume: " + Std.string(e),{ fileName : "SoundSource.hx", lineNumber : 91, className : "oge2d.driver.lime.SoundSource", methodName : "set_volume"});
 		}
 		return this.volume;
 	}
-	,init: function(bytes,callback) {
+	,load: function(bytes,callback) {
 		var _g = this;
-		try {
-			if(oge2d_driver_lime_SoundSource._audioContextClass != null) this._context = Type.createInstance(oge2d_driver_lime_SoundSource._audioContextClass,[]);
-		} catch( e ) {
-			if (e instanceof js__$Boot_HaxeError) e = e.val;
-			this._context = null;
-			haxe_Log.trace("Failed to create Web Audio Context: " + Std.string(e),{ fileName : "SoundSource.hx", lineNumber : 98, className : "oge2d.driver.lime.SoundSource", methodName : "init"});
-		}
-		if(this._context == null) {
+		if(oge2d_driver_lime_SoundSource._context == null) {
 			if(callback != null) callback();
 			return;
 		}
-		this._context.decodeAudioData(bytes.b.bufferValue,function(buf) {
+		oge2d_driver_lime_SoundSource._context.decodeAudioData(bytes.b.bufferValue,function(buf) {
 			_g._sound = buf;
 			if(_g._sound != null && _g._sound.length > 0) _g.state = 1;
 			if(callback != null) callback();
 		},function() {
-			haxe_Log.trace("Failed to decode Web Audio Data",{ fileName : "SoundSource.hx", lineNumber : 109, className : "oge2d.driver.lime.SoundSource", methodName : "init"});
+			haxe_Log.trace("Failed to decode Web Audio Data",{ fileName : "SoundSource.hx", lineNumber : 106, className : "oge2d.driver.lime.SoundSource", methodName : "load"});
 			if(callback != null) callback();
 		});
 	}
@@ -20551,20 +20531,21 @@ oge2d_driver_lime_SoundSource.prototype = {
 	}
 	,turnon: function() {
 		var _g = this;
-		if(this._context == null) return;
+		if(oge2d_driver_lime_SoundSource._context == null) return;
 		if(this._sound == null || this._sound.length <= 0) return;
-		var channel = this._context.createBufferSource();
+		var channel = oge2d_driver_lime_SoundSource._context.createBufferSource();
 		if(channel == null) return;
 		channel.buffer = this._sound;
 		channel.onended = function() {
 			_g.turnoff(channel);
 		};
 		var self_ = this;
+		var clazz_ = oge2d_driver_lime_SoundSource;
 		var gain = null;
-		if(self_._context.createGain != null) gain = this._context.createGain(); else gain = self_._context.createGainNode();
+		if(clazz_._context.createGain != null) gain = oge2d_driver_lime_SoundSource._context.createGain(); else gain = clazz_._context.createGainNode();
 		if(gain == null) return;
 		channel.connect(gain);
-		gain.connect(this._context.destination);
+		gain.connect(oge2d_driver_lime_SoundSource._context.destination);
 		gain.gain.value = this.volume;
 		this._gains.set(channel,gain);
 		if(Reflect.field(channel,"start") != null) channel.start(0); else channel.noteGrainOn(0,0,channel.buffer.duration);
@@ -20596,14 +20577,7 @@ oge2d_driver_lime_SoundSource.prototype = {
 	,dispose: function() {
 		this.stop();
 		this.state = 0;
-		var self_ = this;
-		if(this._context != null) try {
-			self_._context.close();
-		} catch( e ) {
-			if (e instanceof js__$Boot_HaxeError) e = e.val;
-		}
 		if(this._sound != null) this._sound = null;
-		if(this._context != null) this._context = null;
 		this._channels.clear();
 	}
 	,__class__: oge2d_driver_lime_SoundSource
