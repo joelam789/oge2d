@@ -1,5 +1,7 @@
 # oge2d
 
-A 2D game engine written in Haxe
+The dreams are always there just when you remember them.
+
+不忘初心，继续工作
 
 :: work in progress ::
