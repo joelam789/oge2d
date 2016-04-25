@@ -98,7 +98,7 @@ class Animation implements Updater {
 				animation.callback = null;
 				callback(sprite);
 			} else {
-				sprite.addEvent("onAnimationDone");
+				Event.addSpriteEvent(sprite, "onAnimationDone");
 			}
 		}
 	}

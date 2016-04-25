@@ -1,8 +1,8 @@
 package oge2d.system;
 
-import oge2d.core.Sprite;
-import oge2d.core.Scene;
 import oge2d.core.Game;
+import oge2d.core.Scene;
+import oge2d.core.Sprite;
 
 import oge2d.library.common.Media;
 
@@ -17,10 +17,7 @@ class Plot implements Updater {
 	public function wait(time: Int): Void {
 		var plot: Sprite = _plot;
 		if (plot == null) return;
-		//haxe.Timer.delay(function() {
-		//	plot.script.resume("onPlot");
-		//}, Std.int(time));
-		plot.scene.addTimer(time, function() {
+		Timer.addTimer(plot.scene, time, function() {
 			plot.script.resume("onPlot");
 		});
 		plot.script.suspend();

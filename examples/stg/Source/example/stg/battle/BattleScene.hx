@@ -9,6 +9,7 @@ import oge2d.driver.Keyboard;
 import oge2d.system.Text;
 import oge2d.system.Pool;
 import oge2d.system.Plot;
+import oge2d.system.Timer;
 import oge2d.system.Stage;
 import oge2d.system.Color;
 import oge2d.system.Motion;
@@ -47,7 +48,7 @@ class BattleScene {
 			Motion.moveOutside(bomb, speed, angle, -8, -8, 640 + 8, 480 + 8, function(_) {
 				bomb.enabled = false;
 			});
-			scene.addTimer(1000 + 1000 * (Std.int(Math.random() * 100) % 4), function() {
+			Timer.addTimer(scene, 1000 + 1000 * (Std.int(Math.random() * 100) % 4), function() {
 				Color.colorTo(bomb, [1, 1, 0.5, 0.5], 60, function(spr) {
 					if (!spr.enabled) return;
 					spr.enabled = false;
@@ -55,7 +56,7 @@ class BattleScene {
 				});
 			});
 		}
-		scene.addTimer(2000 + 1000 * (Std.int(Math.random() * 100) % 4), function() {
+		Timer.addTimer(scene, 2000 + 1000 * (Std.int(Math.random() * 100) % 4), function() {
 			sendBossBomb(scene, boss, speed);
 		});
 	}
@@ -78,14 +79,14 @@ class BattleScene {
 	}
 	
 	public static function sendEnemyBullet4(scene: Scene, enemy: Sprite, speed: Int) {
-		scene.addTimer(2000, function() {
+		Timer.addTimer(scene, 2000, function() {
 			if (!enemy.enabled) return;
 			var display = enemy.get("stage");
 			var posX: Float = cast display.posX;
 			var posY: Float = cast display.posY;
 			var direction: String = cast enemy.get("animation").action;
 			for (i in 0...3) {
-				scene.addTimer(80 * (i + 1), function() {
+				Timer.addTimer(scene, 80 * (i + 1), function() {
 					if (!enemy.enabled) return;
 					var bullet = Pool.getFreeSprite("enemy-bullet2");
 					if (bullet != null) {
@@ -109,14 +110,14 @@ class BattleScene {
 					}
 				});
 			}
-			scene.addTimer(2000, function() {
+			Timer.addTimer(scene, 2000, function() {
 				sendEnemyBullet4(scene, enemy, speed);
 			});
 		});
 	}
 	
 	public static function sendEnemyBullet5(scene: Scene, enemy: Sprite, speed: Int) {
-		scene.addTimer(1000, function() {
+		Timer.addTimer(scene, 1000, function() {
 			if (!enemy.enabled) return;
 			var display = enemy.get("display");
 			var posX: Float = cast display.posX;
@@ -136,7 +137,7 @@ class BattleScene {
 					});
 				} else break;
 			}
-			scene.addTimer(1000, function() {
+			Timer.addTimer(scene, 1000, function() {
 				sendEnemyBullet5(scene, enemy, speed);
 			});
 		});
@@ -158,7 +159,7 @@ class BattleScene {
 					Animation.play(spr, false);
 				}
 			});
-			scene.addTimer(500 + 500 * (Std.int(Math.random() * 100) % 4), function() {
+			Timer.addTimer(scene, 500 + 500 * (Std.int(Math.random() * 100) % 4), function() {
 				if (!enemy.enabled) return;
 				var display = enemy.get("display");
 				sendEnemyBullet(scene, display.posX, display.posY + 16, Std.int(Math.abs(speed) + 1));
@@ -197,7 +198,7 @@ class BattleScene {
 			});
 		} else {
 			Motion.moveTo(enemy, x2, y2, speed);
-			scene.addTimer(500, function() {
+			Timer.addTimer(scene, 500, function() {
 				if (!enemy.enabled) return;
 				tracePlayer(scene, enemy, speed); // keep tracing ...
 			});
@@ -219,7 +220,7 @@ class BattleScene {
 			enemy.enabled = true;
 			Animation.reset(enemy, direction);
 			Stage.setSpritePos(enemy, Stage.getStageViewX(scene) + posX, Stage.getStageViewY(scene) + posY);
-			scene.addTimer(20000, function() {
+			Timer.addTimer(scene, 20000, function() {
 				enemy.enabled = false; // take it back after 20 seconds
 			});
 			sendEnemyBullet4(scene, enemy, 4);
@@ -413,7 +414,7 @@ class BattleScene {
 						Display.setPosition(friend, posX, posY);
 						friend.enabled = true;
 						Motion.moveTo(friend, posX, display.posY - 48, 8, function(self1) {
-							scene.addTimer(8000, function() {
+							Timer.addTimer(scene, 8000, function() {
 								Motion.moveTo(self1, self1.get("display").posX, -60, 8, function(self2) {
 									self2.enabled = false;
 								});

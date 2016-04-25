@@ -3,6 +3,8 @@ package oge2d.library.common;
 import oge2d.core.Game;
 import oge2d.core.Scene;
 
+import oge2d.system.Timer;
+
 import oge2d.driver.MusicSource;
 import oge2d.driver.SoundSource;
 
@@ -18,7 +20,7 @@ class Media {
 			if (callback != null) callback(scene);
 		} else {
 			music.volume = music.volume - delta;
-			scene.addTimer(interval, function() {
+			Timer.addTimer(scene, interval, function() {
 				turnDownMusic(scene, music, delta, interval, callback);
 			});
 		}

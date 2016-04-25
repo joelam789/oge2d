@@ -69,8 +69,8 @@ class Collision implements Updater {
 					|| Display.isPointInsideBound(boundB, boundA.right, boundA.top)
 					|| Display.isPointInsideBound(boundB, boundA.left, boundA.bottom)
 					|| Display.isPointInsideBound(boundB, boundA.right, boundA.bottom)) {
-					sprs[i].addEvent("onCollide", sprs[j]);
-					sprs[j].addEvent("onCollide", sprs[i]);
+					Event.addSpriteEvent(sprs[i], "onCollide", sprs[j]);
+					Event.addSpriteEvent(sprs[j], "onCollide", sprs[i]);
 				}
 			}
 		}

@@ -348,7 +348,7 @@ class Motion implements Updater {
 			
 			var callback: Sprite-> Void = cast motion.onEnd;
 			if (callback != null) callback(sprite);
-			else sprite.addEvent("onMotionDone");
+			else Event.addSpriteEvent(sprite, "onMotionDone");
 			
 			if (motion.state == 0) motion.callback = null;
 		}

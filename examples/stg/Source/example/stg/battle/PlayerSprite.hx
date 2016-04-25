@@ -1,17 +1,10 @@
 package example.stg.battle;
 
-import oge2d.core.Scene;
 import oge2d.core.Sprite;
 
-import oge2d.driver.Mouse;
-import oge2d.driver.Keyboard;
-
-import oge2d.system.Text;
 import oge2d.system.Pool;
 import oge2d.system.Plot;
-import oge2d.system.Stage;
 import oge2d.system.Color;
-import oge2d.system.Motion;
 import oge2d.system.Display;
 import oge2d.system.Animation;
 

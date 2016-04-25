@@ -237,7 +237,7 @@ class Color implements Updater {
 			var callback: Sprite-> Void = cast color.callback;
 			var needCallback: Bool = callback != null;
 			if (needCallback) callback(sprite);
-			else sprite.addEvent("onColorDone");
+			else Event.addSpriteEvent(sprite, "onColorDone");
 			
 			if (color.state == 0) color.callback = null;
 		}

@@ -17,16 +17,17 @@ class Sprite {
 	public var scene(default, null): Scene = null;
 	
 	public var script(default, null): Script = null;
-	public var events(default, null): List<Dynamic> = null;
 	
 	public var buffer(default, default): DisplayBuffer = null;
-	
-	public var index(default, null): Int = 0;
 	
 	public var enabled(default, set): Bool = false;
 	public var game(default, null): Game;
 	
 	public var components(default, null): Map<String, Dynamic> = null;
+	
+	public var data(default, null): Map<String, List<Dynamic>> = null;
+	
+	public var index(default, null): Int = 0;
 	
 	private var _template: String = "";
 	
@@ -42,8 +43,11 @@ class Sprite {
 					if (this.enabled) this.script.call("onActive");
 					else this.script.call("onInactive");
 				} else {
-					if (this.enabled) this.addEvent("onActive");
-					else this.addEvent("onInactive");
+					var eventSystem = this.game.sys("event");
+					if (eventSystem != null) {
+						if (this.enabled) eventSystem.addSpriteEvent(this, "onActive");
+						else eventSystem.addSpriteEvent(this, "onInactive");
+					}
 				}
 			}
 		}
@@ -56,9 +60,10 @@ class Sprite {
 		this.game = scene.game;
 		
 		this.script = new Script(this.scene.game.libraries, this, true);
-		this.events = new List<Dynamic>();
 		
 		this.components = new Map<String, Dynamic>();
+		
+		this.data = new Map<String, List<Dynamic>>();
 	}
 	
 	public function get(compName: String): Dynamic {
@@ -69,9 +74,6 @@ class Sprite {
 	}
 	public function getTemplateName(): String {
 		return _template;
-	}
-	public function addEvent(eventName: String, ?eventParam: Dynamic) {
-		this.events.add( { name: eventName, param: eventParam } );
 	}
 	public function enable() {
 		enabled = true;

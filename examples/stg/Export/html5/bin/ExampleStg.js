@@ -32,7 +32,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "22", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "52", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -1334,12 +1334,15 @@ oge2d_driver_lime_App.prototype = $extend(lime_app_Application.prototype,{
 	,onKeyUp: function(_,key,_1) {
 		oge2d_driver_lime_Keyboard.setKeyState(key,false);
 		if(this._game != null && this._game.scene != null) {
-			var keyNames = oge2d_driver_lime_Keyboard.getKeyNames(key);
-			var _g = 0;
-			while(_g < keyNames.length) {
-				var keyName = keyNames[_g];
-				++_g;
-				this._game.scene.addEvent("onKeyUp",keyName);
+			var eventSystem = this._game.sys("event");
+			if(eventSystem != null) {
+				var keyNames = oge2d_driver_lime_Keyboard.getKeyNames(key);
+				var _g = 0;
+				while(_g < keyNames.length) {
+					var keyName = keyNames[_g];
+					++_g;
+					eventSystem.addSceneEvent(this._game.scene,"onKeyUp",keyName);
+				}
 			}
 		}
 	}
@@ -1351,7 +1354,10 @@ oge2d_driver_lime_App.prototype = $extend(lime_app_Application.prototype,{
 	}
 	,onMouseUp: function(_,x,y,button) {
 		oge2d_driver_lime_Mouse.setButtonState(button,false,x,y);
-		if(this._game != null && this._game.scene != null) this._game.scene.addEvent("onMouseUp",button);
+		if(this._game != null && this._game.scene != null) {
+			var eventSystem = this._game.sys("event");
+			if(eventSystem != null) eventSystem.addSceneEvent(this._game.scene,"onMouseUp",button);
+		}
 	}
 	,onPreloadComplete: function() {
 		{
@@ -1662,7 +1668,7 @@ example_stg_battle_BattleScene.sendBossBomb = function(scene,boss,speed) {
 		oge2d_system_Motion.moveOutside(bomb,speed,angle,-8,-8,648,488,function(_) {
 			bomb.set_enabled(false);
 		});
-		scene.addTimer(1000 + 1000 * (Std["int"](Math.random() * 100) % 4),null,function() {
+		oge2d_system_Timer.addTimer(scene,1000 + 1000 * (Std["int"](Math.random() * 100) % 4),null,function() {
 			oge2d_system_Color.colorTo(bomb,[1,1,0.5,0.5],60,function(spr) {
 				if(!spr.enabled) return;
 				spr.set_enabled(false);
@@ -1670,7 +1676,7 @@ example_stg_battle_BattleScene.sendBossBomb = function(scene,boss,speed) {
 			});
 		});
 	}
-	scene.addTimer(2000 + 1000 * (Std["int"](Math.random() * 100) % 4),null,function() {
+	oge2d_system_Timer.addTimer(scene,2000 + 1000 * (Std["int"](Math.random() * 100) % 4),null,function() {
 		example_stg_battle_BattleScene.sendBossBomb(scene,boss,speed);
 	});
 };
@@ -1693,7 +1699,7 @@ example_stg_battle_BattleScene.sendBombBullet = function(scene,bomb,speed) {
 	}
 };
 example_stg_battle_BattleScene.sendEnemyBullet4 = function(scene,enemy,speed) {
-	scene.addTimer(2000,null,function() {
+	oge2d_system_Timer.addTimer(scene,2000,null,function() {
 		if(!enemy.enabled) return;
 		var display = enemy.get("stage");
 		var posX = display.posX;
@@ -1702,7 +1708,7 @@ example_stg_battle_BattleScene.sendEnemyBullet4 = function(scene,enemy,speed) {
 		var _g = 0;
 		while(_g < 3) {
 			var i = _g++;
-			scene.addTimer(80 * (i + 1),null,function() {
+			oge2d_system_Timer.addTimer(scene,80 * (i + 1),null,function() {
 				if(!enemy.enabled) return;
 				var bullet = oge2d_system_Pool.getFreeSprite("enemy-bullet2");
 				if(bullet != null) {
@@ -1726,13 +1732,13 @@ example_stg_battle_BattleScene.sendEnemyBullet4 = function(scene,enemy,speed) {
 				}
 			});
 		}
-		scene.addTimer(2000,null,function() {
+		oge2d_system_Timer.addTimer(scene,2000,null,function() {
 			example_stg_battle_BattleScene.sendEnemyBullet4(scene,enemy,speed);
 		});
 	});
 };
 example_stg_battle_BattleScene.sendEnemyBullet5 = function(scene,enemy,speed) {
-	scene.addTimer(1000,null,function() {
+	oge2d_system_Timer.addTimer(scene,1000,null,function() {
 		if(!enemy.enabled) return;
 		var display = enemy.get("display");
 		var posX = display.posX;
@@ -1751,7 +1757,7 @@ example_stg_battle_BattleScene.sendEnemyBullet5 = function(scene,enemy,speed) {
 				});
 			} else break;
 		}
-		scene.addTimer(1000,null,function() {
+		oge2d_system_Timer.addTimer(scene,1000,null,function() {
 			example_stg_battle_BattleScene.sendEnemyBullet5(scene,enemy,speed);
 		});
 	});
@@ -1772,7 +1778,7 @@ example_stg_battle_BattleScene.sendEnemy1 = function(scene,posX,posY,speed) {
 				oge2d_system_Animation.play(spr1,false);
 			}
 		});
-		scene.addTimer(500 + 500 * (Std["int"](Math.random() * 100) % 4),null,function() {
+		oge2d_system_Timer.addTimer(scene,500 + 500 * (Std["int"](Math.random() * 100) % 4),null,function() {
 			if(!enemy.enabled) return;
 			var display = enemy.get("display");
 			example_stg_battle_BattleScene.sendEnemyBullet(scene,display.posX,display.posY + 16,Std["int"](Math.abs(speed) + 1));
@@ -1806,7 +1812,7 @@ example_stg_battle_BattleScene.tracePlayer = function(scene,enemy,speed) {
 		spr.set_enabled(false);
 	}); else {
 		oge2d_system_Motion.moveTo(enemy,x2,y2,speed);
-		scene.addTimer(500,null,function() {
+		oge2d_system_Timer.addTimer(scene,500,null,function() {
 			if(!enemy.enabled) return;
 			example_stg_battle_BattleScene.tracePlayer(scene,enemy,speed);
 		});
@@ -1826,7 +1832,7 @@ example_stg_battle_BattleScene.sendEnemy4 = function(scene,posX,posY,direction) 
 		enemy.set_enabled(true);
 		oge2d_system_Animation.reset(enemy,direction);
 		oge2d_system_Stage.setSpritePos(enemy,oge2d_system_Stage.getStageViewX(scene) + posX,oge2d_system_Stage.getStageViewY(scene) + posY);
-		scene.addTimer(20000,null,function() {
+		oge2d_system_Timer.addTimer(scene,20000,null,function() {
 			enemy.set_enabled(false);
 		});
 		example_stg_battle_BattleScene.sendEnemyBullet4(scene,enemy,4);
@@ -1991,7 +1997,7 @@ example_stg_battle_BattleScene.prototype = {
 						oge2d_system_Display.setPosition(friend,posX,posY);
 						friend.set_enabled(true);
 						oge2d_system_Motion.moveTo(friend,posX,display2.posY - 48,8,null,null,function(self1) {
-							scene.addTimer(8000,null,function() {
+							oge2d_system_Timer.addTimer(scene,8000,null,function() {
 								oge2d_system_Motion.moveTo(self1,self1.get("display").posX,-60,8,null,null,function(self2) {
 									self2.set_enabled(false);
 								});
@@ -2076,7 +2082,7 @@ $hxClasses["example.stg.battle.PlayerSprite"] = example_stg_battle_PlayerSprite;
 example_stg_battle_PlayerSprite.__name__ = ["example","stg","battle","PlayerSprite"];
 example_stg_battle_PlayerSprite.prototype = {
 	onSceneOpen: function(sprite) {
-		haxe_Log.trace(sprite.name + " - onSceneOpen",{ fileName : "PlayerSprite.hx", lineNumber : 29, className : "example.stg.battle.PlayerSprite", methodName : "onSceneOpen"});
+		haxe_Log.trace(sprite.name + " - onSceneOpen",{ fileName : "PlayerSprite.hx", lineNumber : 22, className : "example.stg.battle.PlayerSprite", methodName : "onSceneOpen"});
 	}
 	,onCollide: function(spriteA,spriteB) {
 		if(oge2d_system_Color.isTwinkling(spriteA)) return;
@@ -18652,12 +18658,16 @@ oge2d_core_Game.prototype = {
 			this.scene = value;
 			this.scene.resume();
 			this.scene.ticks = 0;
-			this.scene.timers.clear();
+			var $it1 = this.scene.data.keys();
+			while( $it1.hasNext() ) {
+				var key = $it1.next();
+				this.scene.data.get(key).clear();
+			}
 			if(this.scene != null) {
 				this.scene.script.call("onActive");
-				var $it1 = this.scene.systems.iterator();
-				while( $it1.hasNext() ) {
-					var updater1 = $it1.next();
+				var $it2 = this.scene.systems.iterator();
+				while( $it2.hasNext() ) {
+					var updater1 = $it2.next();
 					updater1.bind(this,this.scene);
 				}
 			}
@@ -19066,29 +19076,26 @@ oge2d_core_Game.prototype = {
 	,__class__: oge2d_core_Game
 };
 var oge2d_core_Scene = function(game,name) {
-	this.dispatching = false;
 	this.ticks = 0;
-	this.timers = null;
 	this._paused = false;
+	this.data = null;
 	this._sprites = null;
 	this.sprites = null;
 	this._systems = null;
 	this.systems = null;
 	this.components = null;
-	this.events = null;
 	this.script = null;
 	this.game = null;
 	this.name = "";
 	this.name = name;
 	this.game = game;
 	this.script = new oge2d_script_Script(this.game.libraries,this,false);
-	this.events = new List();
 	this.components = new haxe_ds_StringMap();
 	this.systems = new haxe_ds_StringMap();
 	this._systems = [];
 	this.sprites = new haxe_ds_StringMap();
 	this._sprites = [];
-	this.timers = new List();
+	this.data = new haxe_ds_StringMap();
 };
 $hxClasses["oge2d.core.Scene"] = oge2d_core_Scene;
 oge2d_core_Scene.__name__ = ["oge2d","core","Scene"];
@@ -19096,16 +19103,14 @@ oge2d_core_Scene.prototype = {
 	name: null
 	,game: null
 	,script: null
-	,events: null
 	,components: null
 	,systems: null
 	,_systems: null
 	,sprites: null
 	,_sprites: null
+	,data: null
 	,_paused: null
-	,timers: null
 	,ticks: null
-	,dispatching: null
 	,init: function(config,onProgress,onComplete) {
 		var _g = this;
 		if(this.game == null || config == null) {
@@ -19264,7 +19269,7 @@ oge2d_core_Scene.prototype = {
 					callback(newSprite);
 				});
 			} else {
-				haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 215, className : "oge2d.core.Scene", methodName : "loadSprite"});
+				haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 213, className : "oge2d.core.Scene", methodName : "loadSprite"});
 				callback(null);
 			}
 		});
@@ -19307,7 +19312,7 @@ oge2d_core_Scene.prototype = {
 							_g.loadSprites(spriteNames,configNames,spriteIndexes,originalCount,onProgress,onComplete);
 						});
 					} else {
-						haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 255, className : "oge2d.core.Scene", methodName : "loadSprites"});
+						haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 253, className : "oge2d.core.Scene", methodName : "loadSprites"});
 						configNames.remove(spriteName);
 						spriteIndexes.remove(spriteName);
 						if(onProgress != null) onProgress(originalCount - spriteNames.length,originalCount);
@@ -19334,16 +19339,6 @@ oge2d_core_Scene.prototype = {
 	}
 	,sort: function(fn) {
 		this._sprites.sort(fn);
-	}
-	,addEvent: function(eventName,eventParam) {
-		this.events.add({ name : eventName, param : eventParam});
-	}
-	,addTimer: function(time,sprite,callback) {
-		if(time <= 0 || sprite == null && callback == null) return;
-		this.timers.add({ start : this.ticks, time : time, sprite : sprite, callback : callback});
-	}
-	,stopEventDispatching: function() {
-		this.dispatching = false;
 	}
 	,isPaused: function() {
 		return this._paused;
@@ -19397,11 +19392,11 @@ oge2d_core_Scene.prototype = {
 };
 var oge2d_core_Sprite = function(scene,name) {
 	this._template = "";
+	this.index = 0;
+	this.data = null;
 	this.components = null;
 	this.enabled = false;
-	this.index = 0;
 	this.buffer = null;
-	this.events = null;
 	this.script = null;
 	this.scene = null;
 	this.name = "";
@@ -19409,8 +19404,8 @@ var oge2d_core_Sprite = function(scene,name) {
 	this.scene = scene;
 	this.game = scene.game;
 	this.script = new oge2d_script_Script(this.scene.game.libraries,this,true);
-	this.events = new List();
 	this.components = new haxe_ds_StringMap();
+	this.data = new haxe_ds_StringMap();
 };
 $hxClasses["oge2d.core.Sprite"] = oge2d_core_Sprite;
 oge2d_core_Sprite.__name__ = ["oge2d","core","Sprite"];
@@ -19418,12 +19413,12 @@ oge2d_core_Sprite.prototype = {
 	name: null
 	,scene: null
 	,script: null
-	,events: null
 	,buffer: null
-	,index: null
 	,enabled: null
 	,game: null
 	,components: null
+	,data: null
+	,index: null
 	,_template: null
 	,set_enabled: function(value) {
 		if(this.enabled != value) {
@@ -19446,7 +19441,12 @@ oge2d_core_Sprite.prototype = {
 			if(this.script.isReady()) {
 				if(this.scene == this.scene.game.scene) {
 					if(this.enabled) this.script.call("onActive"); else this.script.call("onInactive");
-				} else if(this.enabled) this.addEvent("onActive"); else this.addEvent("onInactive");
+				} else {
+					var eventSystem = this.game.sys("event");
+					if(eventSystem != null) {
+						if(this.enabled) eventSystem.addSpriteEvent(this,"onActive"); else eventSystem.addSpriteEvent(this,"onInactive");
+					}
+				}
 			}
 		}
 		return this.enabled;
@@ -19460,9 +19460,6 @@ oge2d_core_Sprite.prototype = {
 	}
 	,getTemplateName: function() {
 		return this._template;
-	}
-	,addEvent: function(eventName,eventParam) {
-		this.events.add({ name : eventName, param : eventParam});
 	}
 	,enable: function() {
 		this.set_enabled(true);
@@ -19499,7 +19496,7 @@ oge2d_core_Sprite.prototype = {
 			configFile = this.scene.game.getSpriteFilePath(templateName);
 			oge2d_driver_lime_Asset.loadJsonObject(configFile,function(setting) {
 				if(setting == null) {
-					if(configFile == null || configFile.length <= 0) haxe_Log.trace("Failed to load sprite with template",{ fileName : "Sprite.hx", lineNumber : 118, className : "oge2d.core.Sprite", methodName : "init"}); else haxe_Log.trace("Failed to load sprite template with config file: " + configFile,{ fileName : "Sprite.hx", lineNumber : 119, className : "oge2d.core.Sprite", methodName : "init"});
+					if(configFile == null || configFile.length <= 0) haxe_Log.trace("Failed to load sprite with template",{ fileName : "Sprite.hx", lineNumber : 120, className : "oge2d.core.Sprite", methodName : "init"}); else haxe_Log.trace("Failed to load sprite template with config file: " + configFile,{ fileName : "Sprite.hx", lineNumber : 121, className : "oge2d.core.Sprite", methodName : "init"});
 					if(callback != null) callback();
 				} else {
 					var currentFieldNames = Reflect.fields(config);
@@ -20635,7 +20632,7 @@ oge2d_library_common_Media.turnDownMusic = function(scene,music,delta,interval,c
 		if(callback != null) callback(scene);
 	} else {
 		music.set_volume(music.volume - delta);
-		scene.addTimer(interval,null,function() {
+		oge2d_system_Timer.addTimer(scene,interval,null,function() {
 			oge2d_library_common_Media.turnDownMusic(scene,music,delta,interval,callback);
 		});
 	}
@@ -22832,7 +22829,7 @@ oge2d_system_Animation.prototype = {
 				var callback = animation.callback;
 				animation.callback = null;
 				callback(sprite);
-			} else sprite.addEvent("onAnimationDone");
+			} else oge2d_system_Event.addSpriteEvent(sprite,"onAnimationDone");
 		}
 	}
 	,end: function(scene) {
@@ -22888,8 +22885,8 @@ oge2d_system_Collision.prototype = {
 				if(!sprs[j].enabled) continue;
 				var boundB = sprs[j].components.get("bound");
 				if(oge2d_system_Display.isPointInsideBound(boundA,boundB.left,boundB.top) || oge2d_system_Display.isPointInsideBound(boundA,boundB.right,boundB.top) || oge2d_system_Display.isPointInsideBound(boundA,boundB.left,boundB.bottom) || oge2d_system_Display.isPointInsideBound(boundA,boundB.right,boundB.bottom) || oge2d_system_Display.isPointInsideBound(boundB,boundA.left,boundA.top) || oge2d_system_Display.isPointInsideBound(boundB,boundA.right,boundA.top) || oge2d_system_Display.isPointInsideBound(boundB,boundA.left,boundA.bottom) || oge2d_system_Display.isPointInsideBound(boundB,boundA.right,boundA.bottom)) {
-					sprs[i].addEvent("onCollide",sprs[j]);
-					sprs[j].addEvent("onCollide",sprs[i]);
+					oge2d_system_Event.addSpriteEvent(sprs[i],"onCollide",sprs[j]);
+					oge2d_system_Event.addSpriteEvent(sprs[j],"onCollide",sprs[i]);
 				}
 			}
 		}
@@ -23065,7 +23062,7 @@ oge2d_system_Color.prototype = {
 			color.state = 0;
 			var callback = color.callback;
 			var needCallback = callback != null;
-			if(needCallback) callback(sprite); else sprite.addEvent("onColorDone");
+			if(needCallback) callback(sprite); else oge2d_system_Event.addSpriteEvent(sprite,"onColorDone");
 			if(color.state == 0) color.callback = null;
 		}
 	}
@@ -23417,13 +23414,36 @@ var oge2d_system_Event = function() {
 $hxClasses["oge2d.system.Event"] = oge2d_system_Event;
 oge2d_system_Event.__name__ = ["oge2d","system","Event"];
 oge2d_system_Event.__interfaces__ = [oge2d_system_Updater];
+oge2d_system_Event.stopDispatching = function() {
+	oge2d_system_Event._dispatching = false;
+};
+oge2d_system_Event.addSceneEvent = function(scene,eventName,eventParam) {
+	var events = scene.data.get("events");
+	if(events == null) {
+		events = new List();
+		scene.data.set("events",events);
+	}
+	events.add({ name : eventName, param : eventParam});
+};
+oge2d_system_Event.addSpriteEvent = function(sprite,eventName,eventParam) {
+	var events = sprite.data.get("events");
+	if(events == null) {
+		events = new List();
+		sprite.data.set("events",events);
+	}
+	events.add({ name : eventName, param : eventParam});
+};
 oge2d_system_Event.prototype = {
 	batched: function() {
 		return false;
 	}
 	,bind: function(game,scene) {
 		if(scene != null) {
-			scene.events.clear();
+			var events = scene.data.get("events");
+			if(events == null) {
+				events = new List();
+				scene.data.set("events",events);
+			} else events.clear();
 			var sprs = scene.filter(function(spr) {
 				return spr.enabled;
 			});
@@ -23445,7 +23465,8 @@ oge2d_system_Event.prototype = {
 				spr3.script.call("onSceneInactive");
 				this.exclude(spr3);
 			}
-			game.scene.events.clear();
+			var events1 = game.scene.data.get("events");
+			if(events1 != null) events1.clear();
 		}
 	}
 	,include: function(sprite) {
@@ -23455,13 +23476,19 @@ oge2d_system_Event.prototype = {
 	,exclude: function(sprite) {
 		sprite.script.reset();
 		sprite.script.basis.reset();
-		sprite.events.clear();
+		var events = sprite.data.get("events");
+		if(events != null) events.clear();
 	}
 	,begin: function(scene) {
 		oge2d_system_Display.sortSpritesByPosition(scene);
+		var events = scene.data.get("events");
+		if(events == null) {
+			events = new List();
+			scene.data.set("events",events);
+		}
 		if(scene.isPaused()) {
 			if(scene.script.isReady()) {
-				var _g_head = scene.events.h;
+				var _g_head = events.h;
 				var _g_val = null;
 				while(_g_head != null) {
 					var event;
@@ -23475,14 +23502,14 @@ oge2d_system_Event.prototype = {
 					if(event.param == null) scene.script.call(event.name); else scene.script.call(event.name,[event.param]);
 				}
 			}
-			scene.events.clear();
+			events.clear();
 			return;
 		}
 		var sprs = scene.filter(function(spr) {
 			return spr.enabled && spr.script.isReady();
 		});
 		sprs.reverse();
-		var _g_head1 = scene.events.h;
+		var _g_head1 = events.h;
 		var _g_val1 = null;
 		while(_g_head1 != null) {
 			var event1;
@@ -23497,7 +23524,7 @@ oge2d_system_Event.prototype = {
 			var eventParam = event1.param;
 			var isMouseEvent = StringTools.startsWith(eventName,"onMouse");
 			var isTouchEvent = !isMouseEvent && StringTools.startsWith(eventName,"onTouch");
-			scene.dispatching = true;
+			oge2d_system_Event._dispatching = true;
 			var _g = 0;
 			while(_g < sprs.length) {
 				var spr1 = sprs[_g];
@@ -23506,31 +23533,34 @@ oge2d_system_Event.prototype = {
 					if(!oge2d_system_Display.isPointInsideBound(oge2d_system_Display.getBound(spr1),oge2d_driver_lime_Mouse.x,oge2d_driver_lime_Mouse.y)) continue;
 				}
 				if(eventParam == null) spr1.script.call(eventName); else spr1.script.call(eventName,[eventParam]);
-				if(!scene.dispatching) break;
+				if(!oge2d_system_Event._dispatching) break;
 			}
-			if(scene.dispatching && scene.script.isReady()) {
+			if(oge2d_system_Event._dispatching && scene.script.isReady()) {
 				if(eventParam == null) scene.script.call(eventName); else scene.script.call(eventName,[eventParam]);
 			}
 		}
-		scene.events.clear();
+		events.clear();
 	}
 	,update: function(sprite) {
 		if(sprite.scene.isPaused()) return;
 		if(!sprite.script.isReady()) return;
-		var _g_head = sprite.events.h;
-		var _g_val = null;
-		while(_g_head != null) {
-			var event;
-			event = (function($this) {
-				var $r;
-				_g_val = _g_head[0];
-				_g_head = _g_head[1];
-				$r = _g_val;
-				return $r;
-			}(this));
-			if(event.param == null) sprite.script.call(event.name); else sprite.script.call(event.name,[event.param]);
+		var events = sprite.data.get("events");
+		if(events != null) {
+			var _g_head = events.h;
+			var _g_val = null;
+			while(_g_head != null) {
+				var event;
+				event = (function($this) {
+					var $r;
+					_g_val = _g_head[0];
+					_g_head = _g_head[1];
+					$r = _g_val;
+					return $r;
+				}(this));
+				if(event.param == null) sprite.script.call(event.name); else sprite.script.call(event.name,[event.param]);
+			}
+			events.clear();
 		}
-		sprite.events.clear();
 		sprite.script.call("onUpdate");
 	}
 	,end: function(scene) {
@@ -23797,7 +23827,7 @@ oge2d_system_Motion.prototype = {
 		if(motion.state == 3) {
 			motion.state = 0;
 			var callback = motion.onEnd;
-			if(callback != null) callback(sprite); else sprite.addEvent("onMotionDone");
+			if(callback != null) callback(sprite); else oge2d_system_Event.addSpriteEvent(sprite,"onMotionDone");
 			if(motion.state == 0) motion.callback = null;
 		}
 	}
@@ -23839,7 +23869,7 @@ oge2d_system_Plot.prototype = {
 	,wait: function(time) {
 		var plot = this._plot;
 		if(plot == null) return;
-		plot.scene.addTimer(time,null,function() {
+		oge2d_system_Timer.addTimer(plot.scene,time,null,function() {
 			plot.script.resume("onPlot");
 		});
 		plot.script.suspend();
@@ -24322,6 +24352,15 @@ var oge2d_system_Timer = function() {
 $hxClasses["oge2d.system.Timer"] = oge2d_system_Timer;
 oge2d_system_Timer.__name__ = ["oge2d","system","Timer"];
 oge2d_system_Timer.__interfaces__ = [oge2d_system_Updater];
+oge2d_system_Timer.addTimer = function(scene,time,sprite,callback) {
+	if(time <= 0 || sprite == null && callback == null) return;
+	var timers = scene.data.get("timers");
+	if(timers == null) {
+		timers = new List();
+		scene.data.set("timers",timers);
+	}
+	timers.add({ start : scene.ticks, time : time, sprite : sprite, callback : callback});
+};
 oge2d_system_Timer.prototype = {
 	batched: function() {
 		return true;
@@ -24338,8 +24377,13 @@ oge2d_system_Timer.prototype = {
 	}
 	,end: function(scene) {
 		if(scene.isPaused()) return;
+		var timers = scene.data.get("timers");
+		if(timers == null) {
+			timers = new List();
+			scene.data.set("timers",timers);
+		}
 		var timeupList = new List();
-		var _g_head = scene.timers.h;
+		var _g_head = timers.h;
 		var _g_val = null;
 		while(_g_head != null) {
 			var timer;
@@ -24363,8 +24407,8 @@ oge2d_system_Timer.prototype = {
 				$r = _g_val1;
 				return $r;
 			}(this));
-			scene.timers.remove(timer1);
-			if(timer1.callback != null) timer1.callback(); else if(timer1.sprite != null) timer1.sprite.addEvent("onTimer");
+			timers.remove(timer1);
+			if(timer1.callback != null) timer1.callback(); else if(timer1.sprite != null) oge2d_system_Event.addSpriteEvent(timer1.sprite,"onTimer");
 		}
 	}
 	,__class__: oge2d_system_Timer
@@ -25848,6 +25892,7 @@ oge2d_script_Script.STATE_ACTIVATED = 3;
 oge2d_script_Script.STATE_RUNNING = 4;
 oge2d_script_Script.STATE_FAIL = 5;
 oge2d_script_Script.STATE_SUCCESS = 6;
+oge2d_system_Event._dispatching = false;
 oge2d_system_Text.DEFAULT_MAX_LENGTH = 16;
 unifill_Unicode.minCodePoint = 0;
 unifill_Unicode.maxCodePoint = 1114111;

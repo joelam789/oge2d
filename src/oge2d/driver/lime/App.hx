@@ -58,8 +58,11 @@ class App extends Application {
 	public override function onKeyUp(_, key, _):Void {
 		Keyboard.setKeyState(key, false);
 		if (_game != null && _game.scene != null) {
-			var keyNames = Keyboard.getKeyNames(key);
-			for (keyName in keyNames) _game.scene.addEvent("onKeyUp", keyName);
+			var eventSystem = _game.sys("event");
+			if (eventSystem != null) {
+				var keyNames = Keyboard.getKeyNames(key);
+				for (keyName in keyNames) eventSystem.addSceneEvent(_game.scene, "onKeyUp", keyName);
+			}
 		}
 	}
 	
@@ -73,7 +76,10 @@ class App extends Application {
 	
 	public override function onMouseUp(_, x:Float, y:Float, button:Int):Void {
 		Mouse.setButtonState(button, false, x, y);
-		if (_game != null && _game.scene != null) _game.scene.addEvent("onMouseUp", button);
+		if (_game != null && _game.scene != null) {
+			var eventSystem = _game.sys("event");
+			if (eventSystem != null) eventSystem.addSceneEvent(_game.scene, "onMouseUp", button);
+		}
 	}
 	
 	public override function onPreloadComplete():Void {

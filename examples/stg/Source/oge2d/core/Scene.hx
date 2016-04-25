@@ -17,7 +17,6 @@ class Scene {
 	public var game(default, null): Game = null;
 	
 	public var script(default, null): Script = null;
-	public var events(default, null): List<Dynamic> = null;
 	
 	public var components(default, null): Map<String, Dynamic> = null;
 	
@@ -27,18 +26,17 @@ class Scene {
 	public var sprites(default, null): Map<String, Sprite> = null;
 	private var _sprites: Array<Sprite> = null;
 	
+	public var data(default, null): Map<String, List<Dynamic>> = null;
+	
 	private var _paused: Bool = false;
-	public var timers(default, null): List<Dynamic> = null;
 	
 	public var ticks(default, default): UInt = 0;
-	public var dispatching(default, default): Bool = false;
 
 	public function new(game: Game, name: String) {
 		this.name = name;
 		this.game = game;
 		
 		this.script = new Script(this.game.libraries, this, false);
-		this.events = new List<Dynamic>();
 		
 		this.components = new Map<String, Dynamic>();
 		
@@ -48,7 +46,7 @@ class Scene {
 		this.sprites = new Map<String, Sprite>();
 		this._sprites = new Array<Sprite>();
 		
-		this.timers = new List<Dynamic>();
+		this.data = new Map<String, List<Dynamic>>();
 	}
 	
 	public function init(config: Dynamic, ?onProgress: Int->Int->Void, ?onComplete: Void->Void) {
@@ -279,17 +277,6 @@ class Scene {
 	}
 	public function sort(fn: Sprite->Sprite->Int): Void {
 		_sprites.sort(fn);
-	}
-	
-	public function addEvent(eventName: String, ?eventParam: Dynamic) {
-		this.events.add( { name: eventName, param: eventParam } );
-	}
-	public function addTimer(time: Int, ?sprite: Sprite, ?callback: Void->Void) {
-		if (time <= 0 || (sprite == null && callback == null)) return;
-		this.timers.add( { start: this.ticks, time: time, sprite: sprite, callback: callback } );
-	}
-	public function stopEventDispatching() {
-		dispatching = false;
 	}
 	
 	public function isPaused(): Bool {

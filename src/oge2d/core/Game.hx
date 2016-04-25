@@ -48,7 +48,7 @@ class Game {
 			this.scene = value;
 			this.scene.resume();
 			this.scene.ticks = 0;
-			this.scene.timers.clear();
+			for (key in this.scene.data.keys()) this.scene.data[key].clear();
 			if (this.scene != null) {
 				this.scene.script.call("onActive");
 				// reset all, for example, add enabled sprites to updaters

@@ -11,6 +11,30 @@ import oge2d.driver.Mouse;
  */
 class Event implements Updater {
 	
+	static var _dispatching: Bool = false;
+	
+	public static function stopDispatching() {
+		_dispatching = false;
+	}
+	
+	public static function addSceneEvent(scene: Scene, eventName: String, ?eventParam: Dynamic) {
+		var events = scene.data.get("events");
+		if (events == null) {
+			events = new List<Dynamic>();
+			scene.data.set("events", events);
+		}
+		events.add( { name: eventName, param: eventParam } );
+	}
+	
+	public static function addSpriteEvent(sprite: Sprite, eventName: String, ?eventParam: Dynamic) {
+		var events = sprite.data.get("events");
+		if (events == null) {
+			events = new List<Dynamic>();
+			sprite.data.set("events", events);
+		}
+		events.add( { name: eventName, param: eventParam } );
+	}
+	
 	public function new() {
 		// ...
 	}
@@ -21,7 +45,11 @@ class Event implements Updater {
 	
 	public function bind(game: Game, scene: Scene): Void {
 		if (scene != null) {
-			scene.events.clear();
+			var events = scene.data.get("events");
+			if (events == null) {
+				events = new List<Dynamic>();
+				scene.data.set("events", events);
+			} else events.clear();
 			var sprs = scene.filter( function(spr) { return spr.enabled; } );
 			for (spr in sprs) {
 				include(spr);
@@ -33,7 +61,8 @@ class Event implements Updater {
 				spr.script.call("onSceneInactive");
 				exclude(spr);
 			}
-			game.scene.events.clear();
+			var events = game.scene.data.get("events");
+			if (events != null) events.clear();
 		}
 	}
 	
@@ -44,59 +73,69 @@ class Event implements Updater {
 	public function exclude(sprite: Sprite): Void {
 		sprite.script.reset();
 		sprite.script.basis.reset();
-		sprite.events.clear();
+		var events = sprite.data.get("events");
+		if (events != null) events.clear();
 	}
 	
 	public function begin(scene: Scene): Void {
 		
 		Display.sortSpritesByPosition(scene); // draw from back to front ...
 		
+		var events = scene.data.get("events");
+		if (events == null) {
+			events = new List<Dynamic>();
+			scene.data.set("events", events);
+		}
+		
 		if (scene.isPaused()) {
 			if (scene.script.isReady()) {
-				for (event in scene.events) {
+				for (event in events) {
 					if (event.param == null) scene.script.call(event.name);
 					else scene.script.call(event.name, [event.param]);
 				}
 			}
-			scene.events.clear();
+			events.clear();
 			return;
 		}
 		
 		var sprs = scene.filter( function(spr) { return spr.enabled && spr.script.isReady(); } );
 		sprs.reverse(); // but check from front to back ...
-		for (event in scene.events) {
+		for (event in events) {
 			var eventName: String = event.name;
 			var eventParam: Dynamic = event.param;
 			var isMouseEvent: Bool = StringTools.startsWith(eventName, "onMouse");
 			var isTouchEvent: Bool = !isMouseEvent && StringTools.startsWith(eventName, "onTouch");
 			
-			scene.dispatching = true;
+			_dispatching = true;
 			for (spr in sprs) {
 				if (isMouseEvent || isTouchEvent) {
 					if (!Display.isPointInsideBound(Display.getBound(spr), Mouse.x, Mouse.y)) continue;
 				}
 				if (eventParam == null) spr.script.call(eventName);
 				else spr.script.call(eventName, [eventParam]);
-				if (!scene.dispatching) break;
+				if (!_dispatching) break;
 			}
-			if (scene.dispatching && scene.script.isReady()) {
+			if (_dispatching && scene.script.isReady()) {
 				if (eventParam == null) scene.script.call(eventName);
 				else scene.script.call(eventName, [eventParam]);
 			}
 		}
 		
-		scene.events.clear();
+		events.clear();
 		
 	}
 	
 	public function update(sprite: Sprite): Void {
 		if (sprite.scene.isPaused()) return;
 		if (!sprite.script.isReady()) return;
-		for (event in sprite.events) {
-			if (event.param == null) sprite.script.call(event.name);
-			else sprite.script.call(event.name, [event.param]);
+		var events = sprite.data.get("events");
+		if (events != null) {
+			for (event in events) {
+				if (event.param == null) sprite.script.call(event.name);
+				else sprite.script.call(event.name, [event.param]);
+			}
+			events.clear();
 		}
-		sprite.events.clear();
 		sprite.script.call("onUpdate");
 	}
 	
