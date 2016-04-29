@@ -10,6 +10,7 @@
 		"Assets/scenes/battle/",
 		"Assets/sounds/boom",
 		"Assets/sounds/hit",
+		"Assets/sounds/levelup",
 		"Assets/sounds/pause",
 		"Assets/sounds/shoot",
 		"Assets/sprites/bg",
@@ -19,6 +20,7 @@
 		"Assets/sprites/friend",
 		"Assets/sprites/icon",
 		"Assets/sprites/label",
+		"Assets/sprites/medal",
 		"Assets/sprites/player"
 	],
 	

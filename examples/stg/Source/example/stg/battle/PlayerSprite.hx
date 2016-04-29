@@ -24,19 +24,27 @@ class PlayerSprite {
 	
 	public function onCollide(spriteA: Sprite, spriteB: Sprite) {
 		
-		if (Color.isTwinkling(spriteA)) return; // in bulletproof state ...
-		
 		var pool = spriteB.get("pool");
 		if (pool == null) return;
 		
 		var hitter: String = cast pool.name;
 		
+		var scene = spriteA.scene;
+		var player = scene.get("player");
+		
+		if (hitter.indexOf("medal") >= 0) {
+			spriteB.disable();
+			player.level = player.level + 1;
+			if (player.level > 2) player.score += 5000;
+			spriteA.game.sound("levelup").play();
+			return;
+		}
+		
 		if (hitter.indexOf("enemy") < 0 
 			&& hitter.indexOf("boss") < 0
 			&& hitter.indexOf("bomb") < 0) return;
-		
-		var scene = spriteA.scene;
-		var player = scene.get("player");
+			
+		if (Color.isTwinkling(spriteA)) return; // in bulletproof state ...
 		
 		if (hitter.indexOf("bullet") >= 0) {
 			spriteB.disable();

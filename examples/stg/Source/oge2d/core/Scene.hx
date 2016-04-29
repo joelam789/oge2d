@@ -181,6 +181,7 @@ class Scene {
 		}
 	}
 	
+	private var _loadings: Array<Dynamic> = null; // to avoid "stack overflow" (only happen when target is flash?)
 	public function preloadSprites(config: Dynamic, ?onProgress: Int->Int->Void, ?onComplete: Void->Void): Void {
 		var spriteNames: Array<String> = cast config.sprites;
 		spriteNames.reverse(); // from tail to head ...
@@ -190,7 +191,19 @@ class Scene {
 			configNames.set(spriteName, spriteName);
 			spriteIndexes.set(spriteName, 0);
 		}
-		loadSprites(spriteNames, configNames, spriteIndexes, spriteNames.length, onProgress, onComplete);
+		
+		_loadings = new Array<Dynamic>();
+		var input = {
+			spriteNames: spriteNames,
+			configNames: configNames,
+			spriteIndexes: spriteIndexes,
+			originalCount: spriteNames.length,
+			onProgress: onProgress,
+			onComplete: onComplete
+		};
+		_loadings.push(input);
+		
+		game.loadings.add(this);
 	}
 	
 	public function loadSprite(spriteName: String, callback: Sprite->Void) {
@@ -216,11 +229,21 @@ class Scene {
 		});
 	}
 	
-	public function loadSprites(spriteNames: Array<String>, configNames: Map<String, String>, 
-								spriteIndexes: Map<String, Int>, ?total: Int, 
-								?onProgress: Int->Int->Void, ?onComplete: Void->Void) {
+	public function processLoading() {
+		
+		var input: Dynamic = null;
+		if (_loadings != null) input = _loadings.pop();
+		if (input == null) return;
+									
+		var spriteNames: Array<String> = cast input.spriteNames;
+		var configNames: Map<String, String> = cast input.configNames;
+		var spriteIndexes: Map<String, Int> = cast input.spriteIndexes;
+		var total: Int = cast input.originalCount;
+		var onProgress: Int->Int->Void = cast input.onProgress;
+		var onComplete: Void->Void = cast input.onComplete;
+									
 		if (spriteNames != null && spriteNames.length > 0) {
-			var originalCount: Int = total != null && total > 0 ? total : spriteNames.length;
+			var originalCount: Int = total > 0 ? total : spriteNames.length;
 			var spriteName = spriteNames.pop();
 			if (spriteName != null && spriteName.length > 0) {
 				var configFile = game.getSceneSpriteFilePath(name, configNames.get(spriteName));
@@ -247,21 +270,55 @@ class Scene {
 							if ((sprIndex == 0 && sprCount == 1) || sprIndex == 1) {
 								if (onProgress != null) onProgress(originalCount - spriteNames.length, originalCount);
 							}
-							loadSprites(spriteNames, configNames, spriteIndexes, originalCount, onProgress, onComplete);
+							
+							var next = {
+								spriteNames: spriteNames,
+								configNames: configNames,
+								spriteIndexes: spriteIndexes,
+								originalCount: originalCount,
+								onProgress: onProgress,
+								onComplete: onComplete
+							};
+							_loadings.push(next);
+							
 						});
 					} else {
 						trace("Failed to load sprite with config file: " + configFile);
 						configNames.remove(spriteName);
 						spriteIndexes.remove(spriteName);
 						if (onProgress != null) onProgress(originalCount - spriteNames.length, originalCount);
-						loadSprites(spriteNames, configNames, spriteIndexes, originalCount, onProgress, onComplete);
+						
+						var next = {
+								spriteNames: spriteNames,
+								configNames: configNames,
+								spriteIndexes: spriteIndexes,
+								originalCount: originalCount,
+								onProgress: onProgress,
+								onComplete: onComplete
+						};
+						_loadings.push(next);
 					}
 				});
 			} else {
 				if (onProgress != null) onProgress(originalCount - spriteNames.length, originalCount);
-				loadSprites(spriteNames, configNames, spriteIndexes, originalCount, onProgress, onComplete);
+				
+				var next = {
+						spriteNames: spriteNames,
+						configNames: configNames,
+						spriteIndexes: spriteIndexes,
+						originalCount: originalCount,
+						onProgress: onProgress,
+						onComplete: onComplete
+				};
+				_loadings.push(next);
+				
 			}
-		} else if (onComplete != null) onComplete();
+		} else {
+			_loadings = null;
+			game.loadings.remove(this);
+			if (onComplete != null) onComplete();
+		}
+
 	}
 	public function getSprite(spriteName: String): Sprite {
 		return sprites.get(spriteName);

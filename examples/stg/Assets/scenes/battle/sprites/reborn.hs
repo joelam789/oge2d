@@ -17,6 +17,7 @@ function onPlot(sprite, plot) {
 			
 			profile.lives = profile.lives - 1;
 			profile.bombs = 2;
+			profile.level = 1;
 			profile.hp = 100;
 			profile.controllable = false;
 			

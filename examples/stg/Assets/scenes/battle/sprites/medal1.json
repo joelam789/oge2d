@@ -1,0 +1,30 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "medal",
+		"count": 3
+	},
+	
+	"preloads":
+	{
+		"sounds": ["levelup"]
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 169,
+		"offsetY": 275,
+		"width": 31,
+		"height": 15
+	},
+	
+	"pool":
+	{
+		"name": "medal",
+		"minIndex": 0,
+		"maxIndex": 2
+	}
+	
+}

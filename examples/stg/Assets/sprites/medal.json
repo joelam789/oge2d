@@ -1,23 +1,7 @@
 {
 	"preloads":
 	{
-		"images": ["main"],
-		"jsons":  ["path/circle", "path/deepv"]
-	},
-	
-	"events":
-	{
-		"onActive": "EnemySprite.onActive",
-		"onCollide": "EnemySprite.onCollide"
-	},
-	
-	"graphic":
-	{
-		"image": "main",
-		"offsetX": 67,
-		"offsetY": 3,
-		"width": 32,
-		"height": 32
+		"images": ["main"]
 	},
 	
 	"display":
@@ -53,21 +37,13 @@
 	{
 		"left": 0,
 		"top": 0,
-		"right": 32,
-		"bottom": 32
+		"right": 31,
+		"bottom": 15
 	},
 	
 	"collision":
 	{
 		"enabled": true
-	},
-	
-	"enemy":
-	{
-		"hp": 10,
-		"maxhp": 10,
-		"value": 100,
-		"bonus": 0
 	}
 	
 }

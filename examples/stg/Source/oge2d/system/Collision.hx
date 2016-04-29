@@ -52,7 +52,7 @@ class Collision implements Updater {
 				var setting = spr.components["collision"];
 				collidable = setting != null && setting.enabled == true;
 			}
-			if (collidable) Display.getBound(spr); // refresh bound
+			if (collidable) Display.getBound(spr); // refresh bound box
 			return collidable;
 		});
 		for (i in 0...sprs.length) {
@@ -61,6 +61,7 @@ class Collision implements Updater {
 			for (j in i + 1...sprs.length) {
 				if (!sprs[j].enabled) continue;
 				var boundB = sprs[j].components["bound"];
+				// always assume that every bound box is a regular rectangle (with no rotation)
 				if (Display.isPointInsideBound(boundA, boundB.left, boundB.top)
 					|| Display.isPointInsideBound(boundA, boundB.right, boundB.top)
 					|| Display.isPointInsideBound(boundA, boundB.left, boundB.bottom)

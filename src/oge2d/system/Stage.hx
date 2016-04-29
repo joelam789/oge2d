@@ -47,6 +47,22 @@ class Stage implements Updater {
 		if (stage != null) return stage.viewY + Mouse.y;
 		return Mouse.y;
 	}
+	public static function getViewBound(scene: Scene): Dynamic {
+		var bound = {
+			left: 0,
+			top:  0,
+			right: scene.game.width,
+			bottom: scene.game.height
+		};
+		var stage = scene.components["stage"];
+		if (stage != null) {
+			bound.left += stage.viewX;
+			bound.top += stage.viewY;
+			bound.right += stage.viewX;
+			bound.bottom += stage.viewY;
+		}
+		return bound;
+	}
 	public static function setViewPos(scene: Scene, posX: Float, posY: Float) {
 		var stage = scene.components["stage"];
 		if (stage == null) return;

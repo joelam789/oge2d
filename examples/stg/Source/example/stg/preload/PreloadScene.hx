@@ -39,6 +39,7 @@ class PreloadScene {
 				scene.game.setActiveScene("menu");
 			});
 		});
+		
 	}
 	
 }

@@ -40,6 +40,16 @@ class Display implements Updater {
 			bound.right = bound.left + size.u * display.width * display.scaleX;
 			bound.bottom = bound.top + size.v * display.height * display.scaleY;
 		}
+		return bound; // just return a regular rect, do not support rotaion for now ...
+	}
+	
+	public static function getScreenBound(scene: Scene): Dynamic {
+		var bound = {
+			left: 0,
+			top:  0,
+			right: scene.game.width,
+			bottom: scene.game.height
+		};
 		return bound;
 	}
 	
@@ -297,6 +307,10 @@ class Display implements Updater {
 			Display.rotate(bottomleft, center, sinv, cosv);
 			Display.rotate(bottomright, center, sinv, cosv);
 		}
+		
+		// should need to check whether it's off screen or not? but seems not easy if it's rotated...
+		// so let's just skip this checking for now
+		// ...
 		
 		// limit minimum z value
 		var posZ:Float = display.posZ + 1000.0;

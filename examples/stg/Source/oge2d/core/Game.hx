@@ -34,6 +34,8 @@ class Game {
 	
 	public var scene(default, set): Scene = null;
 	
+	public var loadings(default, default): List<Scene> = null;
+	
 	private function set_scene(value: Scene): Scene {
 		if (this.scene != value && value != null) {
 			if (this.scene != null) {
@@ -68,6 +70,8 @@ class Game {
 		
 		this.scenes = new Map<String, Scene>();
 		this.script = new Script(this.libraries, this, false);
+		
+		this.loadings = new List<Scene>();
 		
 		if (location != null) this.location = location;
 		while (this.location.length > 0 && StringTools.endsWith(this.location, "/"))
@@ -511,6 +515,7 @@ class Game {
 			if (script.methods != null 
 				&& script.methods.exists("onUpdate")) script.call("onUpdate");
 		}
+		if (loadings.length > 0) loadings.first().processLoading();
 		#if cpp
 		Asset.processPending();
 		#end

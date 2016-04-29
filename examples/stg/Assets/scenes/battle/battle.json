@@ -1,7 +1,8 @@
 {
 	"sprites": ["fps1", "bg1", "plot1", "reborn", "gameover", "player1", "friend1",
 				"icon1", "icon2", "label1", "label2", "label3", "bar1", "info1",
-				"bullet1", "bullet2", "bullet3", "boom1", "boom2", "boom3", "bomb1",
+				"medal1", "boom1", "boom2", "boom3", "bomb1",
+				"bullet1", "bullet2", "bullet3", "bullet4", "bullet5", 
 				"enemy1", "enemy2", "enemy3", "enemy4", "enemy5", "enemy6", "boss1"],
 				
 	"systems": ["plot", "timer", "pool", "stage", "collision", "motion", "color", "animation", "event", "display"],
@@ -47,7 +48,9 @@
 		"bombs": 2,
 		"power": 20,
 		"score": 0,
-		"hp": 100
+		"level": 1,
+		"hp": 100,
+		"sp": 0
 	}
 	
 }

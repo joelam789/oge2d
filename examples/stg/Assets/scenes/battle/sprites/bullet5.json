@@ -1,0 +1,30 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "bullet",
+		"count": 16
+	},
+	
+	"preloads":
+	{
+		"sounds": ["shoot", "hit"]
+	},
+	
+	"graphic":
+	{
+		"image": "main",
+		"offsetX": 47,
+		"offsetY": 245,
+		"width": 13,
+		"height": 13
+	},
+	
+	"pool":
+	{
+		"name": "player-bullet3",
+		"minIndex": 0,
+		"maxIndex": 15
+	}
+	
+}

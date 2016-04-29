@@ -264,6 +264,23 @@ class BattleScene {
 		}
 	}
 	
+	public static function sendMedal(scene: Scene, posX: Float, posY: Float) {
+		var medal = Pool.getFreeSprite("medal");
+		if (medal != null) {
+			resetBonus(scene);
+			medal.enabled = true;
+			Display.setPosition(medal, posX, posY);
+			Motion.moveTo(medal, posX, 480 + 40, 1, function(spr) {
+				spr.enabled = false;
+			});
+		}
+	}
+	
+	public static function resetBonus(scene: Scene) {
+		var profile = scene.get("player");
+		if (profile != null) profile.sp = 0;
+	}
+	
 	public static function moveBoss(scene: Scene, boss: Sprite, speed: Int) {
 		if (!boss.enabled) return;
 		var pathData = scene.game.getJsonData("boss", "path");
@@ -394,9 +411,27 @@ class BattleScene {
 						var display = Display.getDisplay(player);
 						Display.setPosition(bullet, display.posX, display.posY - 40);
 						bullet.enabled = true;
-						Motion.moveTo(bullet, display.posX, -40, 8, function(_) {
-							bullet.enabled = false;
+						Motion.moveTo(bullet, display.posX, -40, 8, function(spr) {
+							spr.enabled = false;
 						});
+						if (profile.level > 1) {
+							var leftside = Pool.getFreeSprite("player-bullet2");
+							if (leftside != null) {
+								Display.setPosition(leftside, display.posX - 40, display.posY - 40);
+								leftside.enabled = true;
+								Motion.moveOutside(leftside, 8, 135, -8, -8, 640 + 8, 480 + 8, function(spr) {
+									spr.enabled = false;
+								});
+							}
+							var rightside = Pool.getFreeSprite("player-bullet3");
+							if (rightside != null) {
+								Display.setPosition(rightside, display.posX + 40, display.posY - 40);
+								rightside.enabled = true;
+								Motion.moveOutside(rightside, 8, 45, -8, -8, 640 + 8, 480 + 8, function(spr) {
+									spr.enabled = false;
+								});
+							}
+						}
 						player.game.sound("shoot").play();
 					}
 					Keyboard.setKeypressTime("LEFT_CTRL", scene.ticks);

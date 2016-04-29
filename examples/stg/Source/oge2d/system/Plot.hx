@@ -110,15 +110,12 @@ class Plot implements Updater {
 	public function bind(game:Game, scene:Scene):Void {
 		
 	}
-	
 	public function include(sprite:Sprite):Void {
 		
 	}
-	
 	public function exclude(sprite:Sprite):Void {
 		
 	}
-	
 	public function begin(scene:Scene):Void {
 		
 	}
@@ -136,5 +133,4 @@ class Plot implements Updater {
 	public function end(scene:Scene):Void {
 		
 	}
-	
 }

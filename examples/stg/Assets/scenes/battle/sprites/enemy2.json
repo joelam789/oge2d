@@ -20,6 +20,11 @@
 		"name": "enemy2",
 		"minIndex": 0,
 		"maxIndex": 4
+	},
+	
+	"enemy":
+	{
+		"bonus": 1
 	}
 	
 }

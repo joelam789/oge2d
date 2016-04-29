@@ -33,12 +33,14 @@ class EnemySprite {
 		if (poolName.indexOf("boss") >= 0) return;
 		if (poolName.indexOf("bomb") >= 0) return;
 		if (poolName.indexOf("enemy") >= 0) return;
+		if (poolName.indexOf("medal") >= 0) return;
 		if (poolName.indexOf("friend") >= 0) return;
 		
 		if (poolName.indexOf("bullet") >= 0) spriteB.enabled = false;
 		
 		var display = Display.getDisplay(spriteA);
-		if (display.posY - display.height / 2 <= 0) return; // skip if not enter screen
+		if (display.posY - display.height / 2 <= 0 
+			|| display.posX + display.width / 4 <= 0) return; // skip if not enter screen
 		
 		if (Color.isTwinkling(spriteB)) return;
 		
@@ -51,6 +53,7 @@ class EnemySprite {
 		} else {
 			var player = spriteA.scene.get("player");
 			player.score = player.score + enemy.value;
+			player.sp = player.sp + enemy.bonus;
 			spriteA.enabled = false;
 			var boom = Pool.getFreeSprite(enemy.maxhp >= 500 ? "boss-boom" 
 								: (enemy.maxhp >= 100 ? "big-boom" : "small-boom"));
@@ -61,6 +64,9 @@ class EnemySprite {
 				Animation.reset(boom);
 				Animation.play(boom, false, function(spr) {
 					spr.enabled = false;
+					if (player.sp >= 10) {
+						BattleScene.sendMedal(spr.scene, display.posX, display.posY);
+					}
 				});
 				spriteA.game.sound(enemy.maxhp >= 100 ? "boom2" : "boom1").play();
 				if (spriteA.get("pool").name == "bomb") {

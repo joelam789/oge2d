@@ -32,7 +32,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "52", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "151", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -1872,6 +1872,21 @@ example_stg_battle_BattleScene.sendEnemy6 = function(scene) {
 		});
 	}
 };
+example_stg_battle_BattleScene.sendMedal = function(scene,posX,posY) {
+	var medal = oge2d_system_Pool.getFreeSprite("medal");
+	if(medal != null) {
+		example_stg_battle_BattleScene.resetBonus(scene);
+		medal.set_enabled(true);
+		oge2d_system_Display.setPosition(medal,posX,posY);
+		oge2d_system_Motion.moveTo(medal,posX,520,1,null,null,function(spr) {
+			spr.set_enabled(false);
+		});
+	}
+};
+example_stg_battle_BattleScene.resetBonus = function(scene) {
+	var profile = scene.get("player");
+	if(profile != null) profile.sp = 0;
+};
 example_stg_battle_BattleScene.moveBoss = function(scene,boss,speed) {
 	if(!boss.enabled) return;
 	var pathData = scene.game.getJsonData("boss","path");
@@ -1976,9 +1991,27 @@ example_stg_battle_BattleScene.prototype = {
 						var display1 = oge2d_system_Display.getDisplay(player);
 						oge2d_system_Display.setPosition(bullet,display1.posX,display1.posY - 40);
 						bullet.set_enabled(true);
-						oge2d_system_Motion.moveTo(bullet,display1.posX,-40,8,null,null,function(_) {
-							bullet.set_enabled(false);
+						oge2d_system_Motion.moveTo(bullet,display1.posX,-40,8,null,null,function(spr) {
+							spr.set_enabled(false);
 						});
+						if(profile.level > 1) {
+							var leftside = oge2d_system_Pool.getFreeSprite("player-bullet2");
+							if(leftside != null) {
+								oge2d_system_Display.setPosition(leftside,display1.posX - 40,display1.posY - 40);
+								leftside.set_enabled(true);
+								oge2d_system_Motion.moveOutside(leftside,8,135,-8,-8,648,488,function(spr1) {
+									spr1.set_enabled(false);
+								});
+							}
+							var rightside = oge2d_system_Pool.getFreeSprite("player-bullet3");
+							if(rightside != null) {
+								oge2d_system_Display.setPosition(rightside,display1.posX + 40,display1.posY - 40);
+								rightside.set_enabled(true);
+								oge2d_system_Motion.moveOutside(rightside,8,45,-8,-8,648,488,function(spr2) {
+									spr2.set_enabled(false);
+								});
+							}
+						}
 						player.game.sound("shoot").play();
 					}
 					oge2d_driver_lime_Keyboard.setKeypressTime("LEFT_CTRL",scene.ticks);
@@ -2028,10 +2061,11 @@ example_stg_battle_EnemySprite.prototype = {
 		if(poolName.indexOf("boss") >= 0) return;
 		if(poolName.indexOf("bomb") >= 0) return;
 		if(poolName.indexOf("enemy") >= 0) return;
+		if(poolName.indexOf("medal") >= 0) return;
 		if(poolName.indexOf("friend") >= 0) return;
 		if(poolName.indexOf("bullet") >= 0) spriteB.set_enabled(false);
 		var display = oge2d_system_Display.getDisplay(spriteA);
-		if(display.posY - display.height / 2 <= 0) return;
+		if(display.posY - display.height / 2 <= 0 || display.posX + display.width / 4 <= 0) return;
 		if(oge2d_system_Color.isTwinkling(spriteB)) return;
 		var enemy = spriteA.get("enemy");
 		enemy.hp = enemy.hp - 10;
@@ -2041,6 +2075,7 @@ example_stg_battle_EnemySprite.prototype = {
 		} else {
 			var player = spriteA.scene.get("player");
 			player.score = player.score + enemy.value;
+			player.sp = player.sp + enemy.bonus;
 			spriteA.set_enabled(false);
 			var boom = oge2d_system_Pool.getFreeSprite(enemy.maxhp >= 500?"boss-boom":enemy.maxhp >= 100?"big-boom":"small-boom");
 			if(boom != null) {
@@ -2050,6 +2085,7 @@ example_stg_battle_EnemySprite.prototype = {
 				oge2d_system_Animation.reset(boom);
 				oge2d_system_Animation.play(boom,false,function(spr) {
 					spr.set_enabled(false);
+					if(player.sp >= 10) example_stg_battle_BattleScene.sendMedal(spr.scene,display1.posX,display1.posY);
 				});
 				spriteA.game.sound(enemy.maxhp >= 100?"boom2":"boom1").play();
 				if(spriteA.get("pool").name == "bomb") example_stg_battle_BattleScene.sendBombBullet(spriteA.scene,spriteA,2); else if(spriteA.get("pool").name == "boss") {
@@ -2085,13 +2121,20 @@ example_stg_battle_PlayerSprite.prototype = {
 		haxe_Log.trace(sprite.name + " - onSceneOpen",{ fileName : "PlayerSprite.hx", lineNumber : 22, className : "example.stg.battle.PlayerSprite", methodName : "onSceneOpen"});
 	}
 	,onCollide: function(spriteA,spriteB) {
-		if(oge2d_system_Color.isTwinkling(spriteA)) return;
 		var pool = spriteB.get("pool");
 		if(pool == null) return;
 		var hitter = pool.name;
-		if(hitter.indexOf("enemy") < 0 && hitter.indexOf("boss") < 0 && hitter.indexOf("bomb") < 0) return;
 		var scene = spriteA.scene;
 		var player = scene.get("player");
+		if(hitter.indexOf("medal") >= 0) {
+			spriteB.disable();
+			player.level = player.level + 1;
+			if(player.level > 2) player.score += 5000;
+			spriteA.game.sound("levelup").play();
+			return;
+		}
+		if(hitter.indexOf("enemy") < 0 && hitter.indexOf("boss") < 0 && hitter.indexOf("bomb") < 0) return;
+		if(oge2d_system_Color.isTwinkling(spriteA)) return;
 		if(hitter.indexOf("bullet") >= 0) {
 			spriteB.disable();
 			player.hp = player.hp - 10;
@@ -18590,6 +18633,7 @@ oge2d_build_Macro.prototype = {
 	__class__: oge2d_build_Macro
 };
 var oge2d_core_Game = function(name,location) {
+	this.loadings = null;
 	this.scene = null;
 	this.interval = 0;
 	this.ticks = 0;
@@ -18610,6 +18654,7 @@ var oge2d_core_Game = function(name,location) {
 	this.components = new haxe_ds_StringMap();
 	this.scenes = new haxe_ds_StringMap();
 	this.script = new oge2d_script_Script(this.libraries,this,false);
+	this.loadings = new List();
 	if(location != null) this.location = location;
 	while(this.location.length > 0 && StringTools.endsWith(this.location,"/")) this.location = HxOverrides.substr(this.location,0,this.location.length - 1);
 	oge2d_driver_lime_Asset.init();
@@ -18641,6 +18686,7 @@ oge2d_core_Game.prototype = {
 	,ticks: null
 	,interval: null
 	,scene: null
+	,loadings: null
 	,set_scene: function(value) {
 		if(this.scene != value && value != null) {
 			if(this.scene != null) {
@@ -18724,7 +18770,7 @@ oge2d_core_Game.prototype = {
 		this.loadPacks(packNames,null,null,function() {
 			oge2d_driver_lime_Asset.loadJsonObject(_g.getGameFilePath(),function(config) {
 				if(config == null) {
-					haxe_Log.trace("Failed to load game config",{ fileName : "Game.hx", lineNumber : 147, className : "oge2d.core.Game", methodName : "init"});
+					haxe_Log.trace("Failed to load game config",{ fileName : "Game.hx", lineNumber : 151, className : "oge2d.core.Game", methodName : "init"});
 					if(callback != null) callback();
 				} else {
 					oge2d_driver_lime_Keyboard.init(appConfig);
@@ -18877,7 +18923,7 @@ oge2d_core_Game.prototype = {
 		if(sceneNames != null && sceneNames.length > 0) firstScene = sceneNames[0]; else firstScene = null;
 		this.loadScenes(sceneNames,null,null,function() {
 			if(_g.script.isReady()) _g.script.call("onInit");
-			if(firstScene != null && firstScene.length > 0) _g.state = 1; else haxe_Log.trace("Scene not found",{ fileName : "Game.hx", lineNumber : 300, className : "oge2d.core.Game", methodName : "preloadScenes"});
+			if(firstScene != null && firstScene.length > 0) _g.state = 1; else haxe_Log.trace("Scene not found",{ fileName : "Game.hx", lineNumber : 304, className : "oge2d.core.Game", methodName : "preloadScenes"});
 			if(callback != null) callback();
 			if(firstScene != null && firstScene.length > 0) _g.setActiveScene(firstScene);
 		});
@@ -18898,7 +18944,7 @@ oge2d_core_Game.prototype = {
 					callback(newScene);
 				});
 			} else {
-				haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 321, className : "oge2d.core.Game", methodName : "loadScene"});
+				haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 325, className : "oge2d.core.Game", methodName : "loadScene"});
 				callback(null);
 			}
 		});
@@ -18928,7 +18974,7 @@ oge2d_core_Game.prototype = {
 							_g.loadScenes(sceneNames,originalCount,onProgress,onComplete);
 						});
 					} else {
-						haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 349, className : "oge2d.core.Game", methodName : "loadScenes"});
+						haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 353, className : "oge2d.core.Game", methodName : "loadScenes"});
 						if(onProgress != null) onProgress(1.0 / originalCount * (loadedSceneCount + 1));
 						_g.loadScenes(sceneNames,originalCount,onProgress,onComplete);
 					}
@@ -18943,7 +18989,7 @@ oge2d_core_Game.prototype = {
 		var sce = this.scenes.get(sceneName);
 		if(sce == null) return false;
 		if(sce == this.scene) {
-			haxe_Log.trace("Cannot remove current scene",{ fileName : "Game.hx", lineNumber : 365, className : "oge2d.core.Game", methodName : "removeScene"});
+			haxe_Log.trace("Cannot remove current scene",{ fileName : "Game.hx", lineNumber : 369, className : "oge2d.core.Game", methodName : "removeScene"});
 			return false;
 		}
 		this.scenes.remove(sceneName);
@@ -19060,7 +19106,7 @@ oge2d_core_Game.prototype = {
 			var _this = new Date();
 			$r = HxOverrides.dateStr(_this);
 			return $r;
-		}(this))).split(" ")[1] + "] " + content,{ fileName : "Game.hx", lineNumber : 482, className : "oge2d.core.Game", methodName : "log"});
+		}(this))).split(" ")[1] + "] " + content,{ fileName : "Game.hx", lineNumber : 486, className : "oge2d.core.Game", methodName : "log"});
 	}
 	,getOS: function() {
 		return "html5";
@@ -19072,10 +19118,12 @@ oge2d_core_Game.prototype = {
 			if(this.scene != null) this.scene.update(time);
 			if(this.script.methods != null && this.script.methods.exists("onUpdate")) this.script.call("onUpdate");
 		}
+		if(this.loadings.length > 0) this.loadings.first().processLoading();
 	}
 	,__class__: oge2d_core_Game
 };
 var oge2d_core_Scene = function(game,name) {
+	this._loadings = null;
 	this.ticks = 0;
 	this._paused = false;
 	this.data = null;
@@ -19237,6 +19285,7 @@ oge2d_core_Scene.prototype = {
 			spr.set_enabled(config.base.enabled);
 		}
 	}
+	,_loadings: null
 	,preloadSprites: function(config,onProgress,onComplete) {
 		var spriteNames = config.sprites;
 		spriteNames.reverse();
@@ -19249,7 +19298,10 @@ oge2d_core_Scene.prototype = {
 			if(__map_reserved[spriteName] != null) configNames.setReserved(spriteName,spriteName); else configNames.h[spriteName] = spriteName;
 			if(__map_reserved[spriteName] != null) spriteIndexes.setReserved(spriteName,0); else spriteIndexes.h[spriteName] = 0;
 		}
-		this.loadSprites(spriteNames,configNames,spriteIndexes,spriteNames.length,onProgress,onComplete);
+		this._loadings = [];
+		var input = { spriteNames : spriteNames, configNames : configNames, spriteIndexes : spriteIndexes, originalCount : spriteNames.length, onProgress : onProgress, onComplete : onComplete};
+		this._loadings.push(input);
+		this.game.loadings.add(this);
 	}
 	,loadSprite: function(spriteName,callback) {
 		var _g = this;
@@ -19269,16 +19321,25 @@ oge2d_core_Scene.prototype = {
 					callback(newSprite);
 				});
 			} else {
-				haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 213, className : "oge2d.core.Scene", methodName : "loadSprite"});
+				haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 226, className : "oge2d.core.Scene", methodName : "loadSprite"});
 				callback(null);
 			}
 		});
 	}
-	,loadSprites: function(spriteNames,configNames,spriteIndexes,total,onProgress,onComplete) {
+	,processLoading: function() {
 		var _g = this;
+		var input = null;
+		if(this._loadings != null) input = this._loadings.pop();
+		if(input == null) return;
+		var spriteNames = input.spriteNames;
+		var configNames = input.configNames;
+		var spriteIndexes = input.spriteIndexes;
+		var total = input.originalCount;
+		var onProgress = input.onProgress;
+		var onComplete = input.onComplete;
 		if(spriteNames != null && spriteNames.length > 0) {
 			var originalCount;
-			if(total != null && total > 0) originalCount = total; else originalCount = spriteNames.length;
+			if(total > 0) originalCount = total; else originalCount = spriteNames.length;
 			var spriteName = spriteNames.pop();
 			if(spriteName != null && spriteName.length > 0) {
 				var configFile = this.game.getSceneSpriteFilePath(this.name,__map_reserved[spriteName] != null?configNames.getReserved(spriteName):configNames.h[spriteName]);
@@ -19309,21 +19370,28 @@ oge2d_core_Scene.prototype = {
 							if(sprIndex == 0 && sprCount == 1 || sprIndex == 1) {
 								if(onProgress != null) onProgress(originalCount - spriteNames.length,originalCount);
 							}
-							_g.loadSprites(spriteNames,configNames,spriteIndexes,originalCount,onProgress,onComplete);
+							var next = { spriteNames : spriteNames, configNames : configNames, spriteIndexes : spriteIndexes, originalCount : originalCount, onProgress : onProgress, onComplete : onComplete};
+							_g._loadings.push(next);
 						});
 					} else {
-						haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 253, className : "oge2d.core.Scene", methodName : "loadSprites"});
+						haxe_Log.trace("Failed to load sprite with config file: " + configFile,{ fileName : "Scene.hx", lineNumber : 286, className : "oge2d.core.Scene", methodName : "processLoading"});
 						configNames.remove(spriteName);
 						spriteIndexes.remove(spriteName);
 						if(onProgress != null) onProgress(originalCount - spriteNames.length,originalCount);
-						_g.loadSprites(spriteNames,configNames,spriteIndexes,originalCount,onProgress,onComplete);
+						var next1 = { spriteNames : spriteNames, configNames : configNames, spriteIndexes : spriteIndexes, originalCount : originalCount, onProgress : onProgress, onComplete : onComplete};
+						_g._loadings.push(next1);
 					}
 				});
 			} else {
 				if(onProgress != null) onProgress(originalCount - spriteNames.length,originalCount);
-				this.loadSprites(spriteNames,configNames,spriteIndexes,originalCount,onProgress,onComplete);
+				var next2 = { spriteNames : spriteNames, configNames : configNames, spriteIndexes : spriteIndexes, originalCount : originalCount, onProgress : onProgress, onComplete : onComplete};
+				this._loadings.push(next2);
 			}
-		} else if(onComplete != null) onComplete();
+		} else {
+			this._loadings = null;
+			this.game.loadings.remove(this);
+			if(onComplete != null) onComplete();
+		}
 	}
 	,getSprite: function(spriteName) {
 		return this.sprites.get(spriteName);
@@ -23156,6 +23224,10 @@ oge2d_system_Display.getBound = function(sprite) {
 	}
 	return bound;
 };
+oge2d_system_Display.getScreenBound = function(scene) {
+	var bound = { left : 0, top : 0, right : scene.game.width, bottom : scene.game.height};
+	return bound;
+};
 oge2d_system_Display.isPointInsideBound = function(bound,pointX,pointY) {
 	if(bound == null) return false;
 	return pointX >= bound.left && pointX < bound.right && pointY >= bound.top && pointY < bound.bottom;
@@ -23214,7 +23286,7 @@ oge2d_system_Display.setupDisplayBuffer = function(sprite,count) {
 					if(pos < 0) imgName = imgName + "-" + sprite.index; else imgName = imgName.substring(0,pos) + "-" + sprite.index + "." + HxOverrides.substr(imgName,pos + 1,null);
 				}
 				var tex = oge2d_driver_lime_Asset.getTexture(sprite.game.getImageFilePath(imgName));
-				if(tex == null) haxe_Log.trace("Failed to load texture: " + imgName,{ fileName : "Display.hx", lineNumber : 123, className : "oge2d.system.Display", methodName : "setupDisplayBuffer"}); else sprite.buffer = oge2d_driver_lime_RendererGL.createDisplayBuffer(tex,count);
+				if(tex == null) haxe_Log.trace("Failed to load texture: " + imgName,{ fileName : "Display.hx", lineNumber : 133, className : "oge2d.system.Display", methodName : "setupDisplayBuffer"}); else sprite.buffer = oge2d_driver_lime_RendererGL.createDisplayBuffer(tex,count);
 			}
 		}
 	}
@@ -24097,6 +24169,17 @@ oge2d_system_Stage.getMousePosY = function(scene) {
 	var stage = scene.components.get("stage");
 	if(stage != null) return stage.viewY + oge2d_driver_lime_Mouse.y;
 	return oge2d_driver_lime_Mouse.y;
+};
+oge2d_system_Stage.getViewBound = function(scene) {
+	var bound = { left : 0, top : 0, right : scene.game.width, bottom : scene.game.height};
+	var stage = scene.components.get("stage");
+	if(stage != null) {
+		bound.left += stage.viewX;
+		bound.top += stage.viewY;
+		bound.right += stage.viewX;
+		bound.bottom += stage.viewY;
+	}
+	return bound;
 };
 oge2d_system_Stage.setViewPos = function(scene,posX,posY) {
 	var stage = scene.components.get("stage");

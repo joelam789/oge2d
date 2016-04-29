@@ -29,6 +29,7 @@ function onPlot(sprite, plot) {
 	battle.sendEnemy1(scene, -20, 0, -4);
 	
 	plot.wait(2500);
+	battle.resetBonus(scene);
 	
 	battle.sendEnemy2(scene, 0, -32, 4);
 	plot.wait(300);
@@ -126,6 +127,7 @@ function onPlot(sprite, plot) {
 	battle.sendEnemy6(scene);
 	
 	plot.wait(500);
+	battle.resetBonus(scene);
 	
 	battle.sendEnemy2(scene, 0, 64, 4);
 	plot.wait(300);
@@ -188,12 +190,12 @@ function onPlot(sprite, plot) {
 	game.music("boss").play();
 	
 	plot.wait(500);
-	
+
 	battle.sendBoss1(scene, 320, -128, 1);
-    battle.sendBoss1(scene, -128, 192, 1);
-    battle.sendBoss1(scene, 640+128, 192, 1);
-	
-	
+	battle.sendBoss1(scene, -128, 192, 1);
+	battle.sendBoss1(scene, 640+128, 192, 1);
+
+
 	plot.disable(sprite);
 
 }
