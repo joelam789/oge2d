@@ -15,20 +15,20 @@ import flash.display3D.IndexBuffer3D;
  */
 class DisplayBufferStage3D {
 
-    public var texture: TextureStage3D = null;
-	
+	public var texture: TextureStage3D = null;
+
 	public var vertices: Vector<Float> = null;
 	public var indices: Vector<UInt> = null;
-	
+
 	public var vertexBuffer: VertexBuffer3D = null;
 	public var indexBuffer: IndexBuffer3D = null;
-	
+
 	public var count: Int = 0;
-	
+
 	public var offset: Int = 0;
-	
+
 	public var data: Dynamic = null;
-	
+
 	public function new() { };
 
 }

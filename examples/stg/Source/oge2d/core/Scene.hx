@@ -20,17 +20,17 @@ class Scene {
 	
 	public var components(default, null): Map<String, Dynamic> = null;
 	
+	public var data(default, null): Map<String, List<Dynamic>> = null;
+	
 	public var systems(default, null): Map<String, Updater> = null;
 	public var _systems: Array<Updater> = null;
 	
 	public var sprites(default, null): Map<String, Sprite> = null;
 	private var _sprites: Array<Sprite> = null;
 	
-	public var data(default, null): Map<String, List<Dynamic>> = null;
+	public var ticks(default, default): UInt = 0;
 	
 	private var _paused: Bool = false;
-	
-	public var ticks(default, default): UInt = 0;
 
 	public function new(game: Game, name: String) {
 		this.name = name;

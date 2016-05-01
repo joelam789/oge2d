@@ -32,7 +32,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "151", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "166", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var result = ApplicationMain.app.exec();
@@ -18633,6 +18633,8 @@ oge2d_build_Macro.prototype = {
 	__class__: oge2d_build_Macro
 };
 var oge2d_core_Game = function(name,location) {
+	this._loadings = null;
+	this._pendings = null;
 	this.loadings = null;
 	this.scene = null;
 	this.interval = 0;
@@ -18836,37 +18838,11 @@ oge2d_core_Game.prototype = {
 		});
 		return true;
 	}
+	,_pendings: null
 	,loadPacks: function(packNames,total,onProgress,onComplete) {
-		var _g = this;
-		if(packNames != null && packNames.length > 0) {
-			var originalCount;
-			if(total != null && total > 0) originalCount = total; else originalCount = packNames.length;
-			if(originalCount == packNames.length) packNames.reverse();
-			var packName = packNames.pop();
-			if(packName != null && packName.length > 0) {
-				var url;
-				url = this.location + "/" + packName + (packName.indexOf(".") >= 0?"":".pack");
-				oge2d_driver_lime_Asset.loadBytes(url,function(bytes) {
-					var onePackPercentage = 1.0 / originalCount;
-					var loadedPackCount = originalCount - (packNames.length + 1);
-					if(bytes != null && bytes.length > 0) oge2d_driver_lime_Asset.loadPack(bytes,function(loadedItemCount,allItemCount) {
-						if(onProgress != null) {
-							var processed = onePackPercentage * loadedItemCount / allItemCount;
-							onProgress(onePackPercentage * loadedPackCount + processed);
-						}
-					},function() {
-						if(onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
-						_g.loadPacks(packNames,originalCount,onProgress,onComplete);
-					}); else {
-						if(onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
-						_g.loadPacks(packNames,originalCount,onProgress,onComplete);
-					}
-				});
-			} else {
-				if(onProgress != null) onProgress(1.0 / originalCount * (originalCount - packNames.length));
-				this.loadPacks(packNames,originalCount,onProgress,onComplete);
-			}
-		} else if(onComplete != null) onComplete();
+		if(this._pendings == null) this._pendings = [];
+		var input = { packNames : packNames, originalCount : packNames.length, onProgress : onProgress, onComplete : onComplete};
+		this._pendings.push(input);
 	}
 	,getPreloadList: function(config) {
 		var list = [];
@@ -18923,7 +18899,7 @@ oge2d_core_Game.prototype = {
 		if(sceneNames != null && sceneNames.length > 0) firstScene = sceneNames[0]; else firstScene = null;
 		this.loadScenes(sceneNames,null,null,function() {
 			if(_g.script.isReady()) _g.script.call("onInit");
-			if(firstScene != null && firstScene.length > 0) _g.state = 1; else haxe_Log.trace("Scene not found",{ fileName : "Game.hx", lineNumber : 304, className : "oge2d.core.Game", methodName : "preloadScenes"});
+			if(firstScene != null && firstScene.length > 0) _g.state = 1; else haxe_Log.trace("Scene not found",{ fileName : "Game.hx", lineNumber : 284, className : "oge2d.core.Game", methodName : "preloadScenes"});
 			if(callback != null) callback();
 			if(firstScene != null && firstScene.length > 0) _g.setActiveScene(firstScene);
 		});
@@ -18944,52 +18920,110 @@ oge2d_core_Game.prototype = {
 					callback(newScene);
 				});
 			} else {
-				haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 325, className : "oge2d.core.Game", methodName : "loadScene"});
+				haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 305, className : "oge2d.core.Game", methodName : "loadScene"});
 				callback(null);
 			}
 		});
 	}
+	,_loadings: null
 	,loadScenes: function(sceneNames,total,onProgress,onComplete) {
+		if(this._loadings == null) this._loadings = [];
+		var input = { sceneNames : sceneNames, originalCount : sceneNames.length, onProgress : onProgress, onComplete : onComplete};
+		this._loadings.push(input);
+	}
+	,processLoading: function() {
 		var _g = this;
-		if(sceneNames != null && sceneNames.length > 0) {
-			var originalCount;
-			if(total != null && total > 0) originalCount = total; else originalCount = sceneNames.length;
-			if(originalCount == sceneNames.length) sceneNames.reverse();
-			var loadedSceneCount = originalCount - sceneNames.length;
-			var sceneName = sceneNames.pop();
-			if(sceneName != null && sceneName.length > 0) {
-				var configFile = this.getSceneFilePath(sceneName);
-				oge2d_driver_lime_Asset.loadJsonObject(configFile,function(sceneConfig) {
-					if(sceneConfig != null) {
-						var newScene = new oge2d_core_Scene(_g,sceneName);
-						newScene.init(sceneConfig,function(loadedItemCount,allItemCount) {
+		var pending = null;
+		if(this._pendings != null) pending = this._pendings.pop();
+		if(pending != null) {
+			var packNames = pending.packNames;
+			var total = pending.originalCount;
+			var onProgress = pending.onProgress;
+			var onComplete = pending.onComplete;
+			if(packNames != null && packNames.length > 0) {
+				var originalCount;
+				if(total > 0) originalCount = total; else originalCount = packNames.length;
+				if(originalCount == packNames.length) packNames.reverse();
+				var packName = packNames.pop();
+				if(packName != null && packName.length > 0) {
+					var url;
+					url = this.location + "/" + packName + (packName.indexOf(".") >= 0?"":".pack");
+					oge2d_driver_lime_Asset.loadBytes(url,function(bytes) {
+						var onePackPercentage = 1.0 / originalCount;
+						var loadedPackCount = originalCount - (packNames.length + 1);
+						if(bytes != null && bytes.length > 0) oge2d_driver_lime_Asset.loadPack(bytes,function(loadedItemCount,allItemCount) {
 							if(onProgress != null) {
-								var oneScenePercentage = 1.0 / originalCount;
-								var processed = oneScenePercentage * loadedItemCount / allItemCount;
-								onProgress(oneScenePercentage * loadedSceneCount + processed);
+								var processed = onePackPercentage * loadedItemCount / allItemCount;
+								onProgress(onePackPercentage * loadedPackCount + processed);
 							}
 						},function() {
-							_g.scenes.set(sceneName,newScene);
-							if(onProgress != null) onProgress(1.0 / originalCount * (loadedSceneCount + 1));
-							_g.loadScenes(sceneNames,originalCount,onProgress,onComplete);
-						});
-					} else {
-						haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 353, className : "oge2d.core.Game", methodName : "loadScenes"});
-						if(onProgress != null) onProgress(1.0 / originalCount * (loadedSceneCount + 1));
-						_g.loadScenes(sceneNames,originalCount,onProgress,onComplete);
-					}
-				});
+							if(onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
+							_g.loadPacks(packNames,originalCount,onProgress,onComplete);
+						}); else {
+							if(onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
+							_g.loadPacks(packNames,originalCount,onProgress,onComplete);
+						}
+					});
+				} else {
+					if(onProgress != null) onProgress(1.0 / originalCount * (originalCount - packNames.length));
+					this.loadPacks(packNames,originalCount,onProgress,onComplete);
+				}
 			} else {
-				if(onProgress != null) onProgress(1.0 / originalCount * (loadedSceneCount + 1));
-				this.loadScenes(sceneNames,originalCount,onProgress,onComplete);
+				this._pendings = null;
+				if(onComplete != null) onComplete();
 			}
-		} else if(onComplete != null) onComplete();
+		}
+		var input = null;
+		if(this._loadings != null) input = this._loadings.pop();
+		if(input != null) {
+			var sceneNames = input.sceneNames;
+			var total1 = input.originalCount;
+			var onProgress1 = input.onProgress;
+			var onComplete1 = input.onComplete;
+			if(sceneNames != null && sceneNames.length > 0) {
+				var originalCount1;
+				if(total1 > 0) originalCount1 = total1; else originalCount1 = sceneNames.length;
+				if(originalCount1 == sceneNames.length) sceneNames.reverse();
+				var loadedSceneCount = originalCount1 - sceneNames.length;
+				var sceneName = sceneNames.pop();
+				if(sceneName != null && sceneName.length > 0) {
+					var configFile = this.getSceneFilePath(sceneName);
+					oge2d_driver_lime_Asset.loadJsonObject(configFile,function(sceneConfig) {
+						if(sceneConfig != null) {
+							var newScene = new oge2d_core_Scene(_g,sceneName);
+							newScene.init(sceneConfig,function(loadedItemCount1,allItemCount1) {
+								if(onProgress1 != null) {
+									var oneScenePercentage = 1.0 / originalCount1;
+									var processed1 = oneScenePercentage * loadedItemCount1 / allItemCount1;
+									onProgress1(oneScenePercentage * loadedSceneCount + processed1);
+								}
+							},function() {
+								_g.scenes.set(sceneName,newScene);
+								if(onProgress1 != null) onProgress1(1.0 / originalCount1 * (loadedSceneCount + 1));
+								_g.loadScenes(sceneNames,originalCount1,onProgress1,onComplete1);
+							});
+						} else {
+							haxe_Log.trace("Failed to load scene with config file: " + configFile,{ fileName : "Game.hx", lineNumber : 400, className : "oge2d.core.Game", methodName : "processLoading"});
+							if(onProgress1 != null) onProgress1(1.0 / originalCount1 * (loadedSceneCount + 1));
+							_g.loadScenes(sceneNames,originalCount1,onProgress1,onComplete1);
+						}
+					});
+				} else {
+					if(onProgress1 != null) onProgress1(1.0 / originalCount1 * (loadedSceneCount + 1));
+					this.loadScenes(sceneNames,originalCount1,onProgress1,onComplete1);
+				}
+			} else {
+				this._loadings = null;
+				if(onComplete1 != null) onComplete1();
+			}
+		}
+		if(this.loadings.length > 0) this.loadings.first().processLoading();
 	}
 	,removeScene: function(sceneName) {
 		var sce = this.scenes.get(sceneName);
 		if(sce == null) return false;
 		if(sce == this.scene) {
-			haxe_Log.trace("Cannot remove current scene",{ fileName : "Game.hx", lineNumber : 369, className : "oge2d.core.Game", methodName : "removeScene"});
+			haxe_Log.trace("Cannot remove current scene",{ fileName : "Game.hx", lineNumber : 425, className : "oge2d.core.Game", methodName : "removeScene"});
 			return false;
 		}
 		this.scenes.remove(sceneName);
@@ -19106,7 +19140,7 @@ oge2d_core_Game.prototype = {
 			var _this = new Date();
 			$r = HxOverrides.dateStr(_this);
 			return $r;
-		}(this))).split(" ")[1] + "] " + content,{ fileName : "Game.hx", lineNumber : 486, className : "oge2d.core.Game", methodName : "log"});
+		}(this))).split(" ")[1] + "] " + content,{ fileName : "Game.hx", lineNumber : 542, className : "oge2d.core.Game", methodName : "log"});
 	}
 	,getOS: function() {
 		return "html5";
@@ -19118,19 +19152,19 @@ oge2d_core_Game.prototype = {
 			if(this.scene != null) this.scene.update(time);
 			if(this.script.methods != null && this.script.methods.exists("onUpdate")) this.script.call("onUpdate");
 		}
-		if(this.loadings.length > 0) this.loadings.first().processLoading();
+		this.processLoading();
 	}
 	,__class__: oge2d_core_Game
 };
 var oge2d_core_Scene = function(game,name) {
 	this._loadings = null;
-	this.ticks = 0;
 	this._paused = false;
-	this.data = null;
+	this.ticks = 0;
 	this._sprites = null;
 	this.sprites = null;
 	this._systems = null;
 	this.systems = null;
+	this.data = null;
 	this.components = null;
 	this.script = null;
 	this.game = null;
@@ -19152,13 +19186,13 @@ oge2d_core_Scene.prototype = {
 	,game: null
 	,script: null
 	,components: null
+	,data: null
 	,systems: null
 	,_systems: null
 	,sprites: null
 	,_sprites: null
-	,data: null
-	,_paused: null
 	,ticks: null
+	,_paused: null
 	,init: function(config,onProgress,onComplete) {
 		var _g = this;
 		if(this.game == null || config == null) {

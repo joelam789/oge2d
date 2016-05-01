@@ -10,11 +10,11 @@ import flash.display3D.textures.Texture;
  */
 class TextureStage3D {
 
-    public var data: Texture = null;
-	
+	public var data: Texture = null;
+
 	public var width: Float = 0;
 	public var height: Float = 0;
-	
+
 	public function new(tex: Texture, w: Float, h: Float) {
 		this.data = tex;
 		this.width = w;

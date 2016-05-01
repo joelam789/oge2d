@@ -226,36 +226,16 @@ class Game {
 		return true;
 	}
 	
+	private var _pendings: Array<Dynamic> = null; // to avoid "stack overflow"
 	public function loadPacks(packNames: Array<String>, ?total: Int, ?onProgress: Float->Void, ?onComplete: Void->Void) {
-		if (packNames != null && packNames.length > 0) {
-			var originalCount: Int = total != null && total > 0 ? total : packNames.length;
-			if (originalCount == packNames.length) packNames.reverse(); // from tail to head...
-			var packName = packNames.pop();
-			if (packName != null && packName.length > 0) {
-				var url = this.location + "/" + packName + (packName.indexOf(".") >= 0 ? "" : ".pack");
-				Asset.loadBytes(url, function(bytes) {
-					var onePackPercentage: Float = 1.0 / originalCount;
-					var loadedPackCount = originalCount - (packNames.length + 1);
-					if (bytes != null && bytes.length > 0) {
-						Asset.loadPack(bytes, function(loadedItemCount, allItemCount) {
-							if (onProgress != null) {
-								var processed: Float = onePackPercentage * loadedItemCount / allItemCount;
-								onProgress(onePackPercentage * loadedPackCount + processed);
-							}
-						}, function() {
-							if (onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
-							loadPacks(packNames, originalCount, onProgress, onComplete);
-						});
-					} else {
-						if (onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
-						loadPacks(packNames, originalCount, onProgress, onComplete);
-					}
-				});
-			} else {
-				if (onProgress != null) onProgress((1.0 / originalCount) * (originalCount - packNames.length));
-				loadPacks(packNames, originalCount, onProgress, onComplete);
-			}
-		} else if (onComplete != null) onComplete();
+		if (_pendings == null) _pendings = new Array<Dynamic>();
+		var input = {
+			packNames: packNames,
+			originalCount: packNames.length,
+			onProgress: onProgress,
+			onComplete: onComplete
+		};
+		_pendings.push(input);
 	}
 	
 	public function getPreloadList(config: Dynamic): Array<String> {
@@ -327,39 +307,115 @@ class Game {
 			}
 		});
 	}
+	
+	private var _loadings: Array<Dynamic> = null; // to avoid "stack overflow"
 	public function loadScenes(sceneNames: Array<String>, ?total: Int, ?onProgress: Float->Void, ?onComplete: Void->Void) {
-		if (sceneNames != null && sceneNames.length > 0) {
-			var originalCount: Int = total != null && total > 0 ? total : sceneNames.length;
-			if (originalCount == sceneNames.length) sceneNames.reverse(); // from tail to head...
-			var loadedSceneCount: Int = originalCount - sceneNames.length;
-			var sceneName = sceneNames.pop();
-			if (sceneName != null && sceneName.length > 0) {
-				var configFile = getSceneFilePath(sceneName);
-				Asset.loadJsonObject(configFile, function(sceneConfig) {
-					if (sceneConfig != null) {
-						var newScene: Scene = new Scene(this, sceneName);
-						newScene.init(sceneConfig, function(loadedItemCount, allItemCount) {
-							if (onProgress != null) {
-								var oneScenePercentage: Float = 1.0 / originalCount;
-								var processed: Float = oneScenePercentage * loadedItemCount / allItemCount;
-								onProgress(oneScenePercentage * loadedSceneCount + processed);
-							}
-						}, function() {
-							scenes.set(sceneName, newScene);
+		if (_loadings == null) _loadings = new Array<Dynamic>();
+		var input = {
+			sceneNames: sceneNames,
+			originalCount: sceneNames.length,
+			onProgress: onProgress,
+			onComplete: onComplete
+		};
+		_loadings.push(input);
+	}
+	
+	private function processLoading() {
+		
+		var pending: Dynamic = null;
+		if (_pendings != null) pending = _pendings.pop();
+		if (pending != null) {
+			
+			var packNames: Array<String> = cast pending.packNames;
+			var total: Int = cast pending.originalCount;
+			var onProgress: Float->Void = cast pending.onProgress;
+			var onComplete: Void->Void = cast pending.onComplete;
+			
+			if (packNames != null && packNames.length > 0) {
+				var originalCount: Int = total > 0 ? total : packNames.length;
+				if (originalCount == packNames.length) packNames.reverse(); // from tail to head...
+				var packName = packNames.pop();
+				if (packName != null && packName.length > 0) {
+					var url = this.location + "/" + packName + (packName.indexOf(".") >= 0 ? "" : ".pack");
+					Asset.loadBytes(url, function(bytes) {
+						var onePackPercentage: Float = 1.0 / originalCount;
+						var loadedPackCount = originalCount - (packNames.length + 1);
+						if (bytes != null && bytes.length > 0) {
+							Asset.loadPack(bytes, function(loadedItemCount, allItemCount) {
+								if (onProgress != null) {
+									var processed: Float = onePackPercentage * loadedItemCount / allItemCount;
+									onProgress(onePackPercentage * loadedPackCount + processed);
+								}
+							}, function() {
+								if (onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
+								loadPacks(packNames, originalCount, onProgress, onComplete);
+							});
+						} else {
+							if (onProgress != null) onProgress(onePackPercentage * (loadedPackCount + 1));
+							loadPacks(packNames, originalCount, onProgress, onComplete);
+						}
+					});
+				} else {
+					if (onProgress != null) onProgress((1.0 / originalCount) * (originalCount - packNames.length));
+					loadPacks(packNames, originalCount, onProgress, onComplete);
+				}
+			} else {
+				_pendings = null;
+				if (onComplete != null) onComplete();
+			}
+			
+		}
+		
+		var input: Dynamic = null;
+		if (_loadings != null) input = _loadings.pop();
+		if (input != null) {
+									
+			var sceneNames: Array<String> = cast input.sceneNames;
+			var total: Int = cast input.originalCount;
+			var onProgress: Float->Void = cast input.onProgress;
+			var onComplete: Void->Void = cast input.onComplete;
+
+			if (sceneNames != null && sceneNames.length > 0) {
+				var originalCount: Int = total > 0 ? total : sceneNames.length;
+				if (originalCount == sceneNames.length) sceneNames.reverse(); // from tail to head...
+				var loadedSceneCount: Int = originalCount - sceneNames.length;
+				var sceneName = sceneNames.pop();
+				if (sceneName != null && sceneName.length > 0) {
+					var configFile = getSceneFilePath(sceneName);
+					Asset.loadJsonObject(configFile, function(sceneConfig) {
+						if (sceneConfig != null) {
+							var newScene: Scene = new Scene(this, sceneName);
+							newScene.init(sceneConfig, function(loadedItemCount, allItemCount) {
+								if (onProgress != null) {
+									var oneScenePercentage: Float = 1.0 / originalCount;
+									var processed: Float = oneScenePercentage * loadedItemCount / allItemCount;
+									onProgress(oneScenePercentage * loadedSceneCount + processed);
+								}
+							}, function() {
+								scenes.set(sceneName, newScene);
+								if (onProgress != null) onProgress((1.0 / originalCount) * (loadedSceneCount + 1));
+								loadScenes(sceneNames, originalCount, onProgress, onComplete);
+							});
+						} else {
+							trace("Failed to load scene with config file: " + configFile);
 							if (onProgress != null) onProgress((1.0 / originalCount) * (loadedSceneCount + 1));
 							loadScenes(sceneNames, originalCount, onProgress, onComplete);
-						});
-					} else {
-						trace("Failed to load scene with config file: " + configFile);
-						if (onProgress != null) onProgress((1.0 / originalCount) * (loadedSceneCount + 1));
-						loadScenes(sceneNames, originalCount, onProgress, onComplete);
-					}
-				});
+						}
+					});
+				} else {
+					if (onProgress != null) onProgress((1.0 / originalCount) * (loadedSceneCount + 1));
+					loadScenes(sceneNames, originalCount, onProgress, onComplete);
+				}
 			} else {
-				if (onProgress != null) onProgress((1.0 / originalCount) * (loadedSceneCount + 1));
-				loadScenes(sceneNames, originalCount, onProgress, onComplete);
+				_loadings = null;
+				if (onComplete != null) onComplete();
 			}
-		} else if (onComplete != null) onComplete();
+		}
+		
+		if (loadings.length > 0) loadings.first().processLoading();
+		#if cpp
+		Asset.processPending();
+		#end
 	}
 	
 	public function removeScene(sceneName: String): Bool {
@@ -515,9 +571,6 @@ class Game {
 			if (script.methods != null 
 				&& script.methods.exists("onUpdate")) script.call("onUpdate");
 		}
-		if (loadings.length > 0) loadings.first().processLoading();
-		#if cpp
-		Asset.processPending();
-		#end
+		processLoading();
 	}
 }

@@ -519,9 +519,9 @@ class Asset {
 		data.uncompress(flash.utils.CompressionAlgorithm.DEFLATE);
 		return Bytes.ofData(data);
 		#elseif html5
-        var output = new haxe.io.BytesBuffer();
-        var inflate = new haxe.zip.InflateImpl(new BytesInput(entry.data), false, false);
-		while( true ) {
+		var output = new haxe.io.BytesBuffer();
+		var inflate = new haxe.zip.InflateImpl(new BytesInput(entry.data), false, false);
+		while ( true ) {
 			var len = inflate.readBytes(_buf, 0, _buf.length);
 			output.addBytes(_buf, 0, len);
 			if (len < _buf.length) break;
