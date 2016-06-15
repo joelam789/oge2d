@@ -10,7 +10,7 @@ function onMouseUp(sprite, button) {
 	var color = game.sys("color");
 	if (color.isTwinkling(sprite)) return;
 	
-	color.twinkle(sprite, 5, 200);
+	color.flicker(sprite, 5, 200);
 	
 	game.sound("select").play();
 	

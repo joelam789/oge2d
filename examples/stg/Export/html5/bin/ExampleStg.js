@@ -35,7 +35,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "2", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "33", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	ApplicationMain.app.exec();
@@ -28579,12 +28579,12 @@ oge2d_system_Stage.prototype = {
 		if(tilemapName != null && tilemapName.length > 0) {
 			var maxX = 0;
 			var maxY = 0;
-			oge2d_system_Tilemap.loadTilemap(game,tilemapName);
-			if(oge2d_system_Tilemap.columnCount > 0 && oge2d_system_Tilemap.tileWidth > 0) {
-				maxX = oge2d_system_Tilemap.columnCount * oge2d_system_Tilemap.tileWidth - game.width;
+			var tilemap = oge2d_system_Tilemap.loadTilemap(game,tilemapName);
+			if(tilemap != null && tilemap.columnCount > 0 && tilemap.tileWidth > 0) {
+				maxX = tilemap.columnCount * tilemap.tileWidth - game.width;
 			}
-			if(oge2d_system_Tilemap.rowCount > 0 && oge2d_system_Tilemap.tileHeight > 0) {
-				maxY = oge2d_system_Tilemap.rowCount * oge2d_system_Tilemap.tileHeight - game.height;
+			if(tilemap != null && tilemap.rowCount > 0 && tilemap.tileHeight > 0) {
+				maxY = tilemap.rowCount * tilemap.tileHeight - game.height;
 			}
 			stage.maxX = maxX > 0?maxX:0;
 			stage.maxY = maxY > 0?maxY:0;
@@ -28877,7 +28877,7 @@ oge2d_system_Text.prototype = {
 };
 var oge2d_system_Tileset = function() {
 	this.buffer = null;
-	this.tiles = [];
+	this.tiles = null;
 	this.imageHeight = 0;
 	this.imageWidth = 0;
 	this.tileHeight = 0;
@@ -28896,9 +28896,35 @@ oge2d_system_Tileset.prototype = {
 	,buffer: null
 	,__class__: oge2d_system_Tileset
 };
+var oge2d_system_TilemapData = function() {
+	this.cells = null;
+	this.rowCount = 0;
+	this.columnCount = 0;
+	this.tileHeight = 0;
+	this.tileWidth = 0;
+	this.indices = null;
+	this.tilesets = null;
+	this.name = "";
+};
+$hxClasses["oge2d.system.TilemapData"] = oge2d_system_TilemapData;
+oge2d_system_TilemapData.__name__ = ["oge2d","system","TilemapData"];
+oge2d_system_TilemapData.prototype = {
+	name: null
+	,tilesets: null
+	,indices: null
+	,tileWidth: null
+	,tileHeight: null
+	,columnCount: null
+	,rowCount: null
+	,cells: null
+	,__class__: oge2d_system_TilemapData
+};
 var oge2d_system_Tilemap = function() {
 	if(oge2d_system_Tilemap._tilesets == null) {
 		oge2d_system_Tilemap._tilesets = new haxe_ds_StringMap();
+	}
+	if(oge2d_system_Tilemap._tilemaps == null) {
+		oge2d_system_Tilemap._tilemaps = new haxe_ds_StringMap();
 	}
 };
 $hxClasses["oge2d.system.Tilemap"] = oge2d_system_Tilemap;
@@ -28910,24 +28936,38 @@ oge2d_system_Tilemap.loadTileset = function(game,tilesetName) {
 		var _this1 = oge2d_system_Tilemap._tilesets;
 		return __map_reserved[tilesetName] != null?_this1.getReserved(tilesetName):_this1.h[tilesetName];
 	}
-	var result = null;
 	var tilesetJson = oge2d_driver_lime_Asset.getJsonData(game.getJsonFilePath(tilesetName,"tileset"));
-	if(tilesetJson != null) {
-		var tex = oge2d_driver_lime_Asset.getTexture(game.getImageFilePath(tilesetJson.image));
-		if(tex == null) {
-			haxe_Log.trace("Failed to load texture: " + tilesetJson.image,{ fileName : "Tilemap.hx", lineNumber : 67, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
-		} else {
-			result = new oge2d_system_Tileset();
-			result.buffer = oge2d_driver_lime_RendererGL.createDisplayBuffer(tex,1);
-			result.imageWidth = tex.width;
-			result.imageHeight = tex.height;
-			if(result.buffer == null) {
-				haxe_Log.trace("Failed to create display buffer for tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 74, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
-				result = null;
-			}
-		}
+	if(tilesetJson == null) {
+		haxe_Log.trace("Failed to load tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 69, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
+		return null;
+	}
+	var result = null;
+	var cellWidth = tilesetJson.tileWidth;
+	var cellHeight = tilesetJson.tileHeight;
+	var col = game.width % cellWidth;
+	if(col == 0) {
+		col = (game.width / cellWidth | 0) + 1;
 	} else {
-		haxe_Log.trace("Failed to load tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 78, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
+		col = ((game.width - col) / cellWidth | 0) + 2;
+	}
+	var row = game.height % cellHeight;
+	if(row == 0) {
+		row = (game.height / cellHeight | 0) + 1;
+	} else {
+		row = ((game.height - row) / cellHeight | 0) + 2;
+	}
+	var tex = oge2d_driver_lime_Asset.getTexture(game.getImageFilePath(tilesetJson.image));
+	if(tex == null) {
+		haxe_Log.trace("Failed to load texture: " + tilesetJson.image,{ fileName : "Tilemap.hx", lineNumber : 87, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
+	} else {
+		result = new oge2d_system_Tileset();
+		result.buffer = oge2d_driver_lime_RendererGL.createDisplayBuffer(tex,col * row);
+		result.imageWidth = tex.width;
+		result.imageHeight = tex.height;
+		if(result.buffer == null) {
+			haxe_Log.trace("Failed to create display buffer for tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 94, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
+			result = null;
+		}
 	}
 	if(tilesetJson != null && result != null) {
 		result.name = tilesetName;
@@ -28946,12 +28986,19 @@ oge2d_system_Tilemap.loadTileset = function(game,tilesetName) {
 	return result;
 };
 oge2d_system_Tilemap.loadTilemap = function(game,tilemapName) {
+	var _this = oge2d_system_Tilemap._tilemaps;
+	if(__map_reserved[tilemapName] != null?_this.existsReserved(tilemapName):_this.h.hasOwnProperty(tilemapName)) {
+		var _this1 = oge2d_system_Tilemap._tilemaps;
+		return __map_reserved[tilemapName] != null?_this1.getReserved(tilemapName):_this1.h[tilemapName];
+	}
 	var tilemapJson = oge2d_driver_lime_Asset.getJsonData(game.getJsonFilePath(tilemapName,"tilemap"));
 	if(tilemapJson == null) {
-		haxe_Log.trace("Failed to load tilemap: " + tilemapName,{ fileName : "Tilemap.hx", lineNumber : 97, className : "oge2d.system.Tilemap", methodName : "loadTilemap"});
-		return;
+		haxe_Log.trace("Failed to load tilemap: " + tilemapName,{ fileName : "Tilemap.hx", lineNumber : 118, className : "oge2d.system.Tilemap", methodName : "loadTilemap"});
+		return null;
 	}
+	var result = null;
 	var tilesetList = [];
+	var indexList = [];
 	var tilesetNames = tilemapJson.tilesets;
 	var _g = 0;
 	while(_g < tilesetNames.length) {
@@ -28960,31 +29007,43 @@ oge2d_system_Tilemap.loadTilemap = function(game,tilemapName) {
 		var tileset = oge2d_system_Tilemap.loadTileset(game,tilesetName);
 		if(tileset != null) {
 			tilesetList.push(tileset);
+			indexList.push(0);
 		} else {
 			break;
 		}
 	}
 	if(tilesetList.length > 0 && tilesetList.length == tilemapJson.tilesets.length) {
-		oge2d_system_Tilemap.tilesets = tilesetList;
-		oge2d_system_Tilemap.$name = tilemapName;
-		oge2d_system_Tilemap.tileWidth = tilemapJson.tileWidth;
-		oge2d_system_Tilemap.tileHeight = tilemapJson.tileHeight;
-		oge2d_system_Tilemap.columnCount = tilemapJson.columnCount;
-		oge2d_system_Tilemap.rowCount = tilemapJson.rowCount;
-		oge2d_system_Tilemap.cells = tilemapJson.cells;
+		result = new oge2d_system_TilemapData();
+		result.tilesets = tilesetList;
+		result.indices = indexList;
+		result.name = tilemapName;
+		result.tileWidth = tilemapJson.tileWidth;
+		result.tileHeight = tilemapJson.tileHeight;
+		result.columnCount = tilemapJson.columnCount;
+		result.rowCount = tilemapJson.rowCount;
+		result.cells = tilemapJson.cells;
 	}
+	if(result != null) {
+		var _this2 = oge2d_system_Tilemap._tilemaps;
+		if(__map_reserved[tilemapName] != null) {
+			_this2.setReserved(tilemapName,result);
+		} else {
+			_this2.h[tilemapName] = result;
+		}
+	}
+	return result;
 };
-oge2d_system_Tilemap.drawCell = function(viewX,viewY,viewZ,col,row) {
-	var idx = row * oge2d_system_Tilemap.columnCount + col;
-	if(idx < 0 || idx >= oge2d_system_Tilemap.cells.length) {
+oge2d_system_Tilemap.drawCell = function(tilemap,viewX,viewY,viewZ,col,row) {
+	var idx = row * tilemap.columnCount + col;
+	if(idx < 0 || idx >= tilemap.cells.length) {
 		return;
 	}
-	var cell = oge2d_system_Tilemap.cells[idx];
+	var cell = tilemap.cells[idx];
 	var layers = cell.tiles.length;
-	var width = oge2d_system_Tilemap.tileWidth;
-	var height = oge2d_system_Tilemap.tileHeight;
-	var posX = oge2d_system_Tilemap.tileWidth * col - viewX;
-	var posY = oge2d_system_Tilemap.tileHeight * row - viewY;
+	var width = tilemap.tileWidth;
+	var height = tilemap.tileHeight;
+	var posX = tilemap.tileWidth * col - viewX;
+	var posY = tilemap.tileHeight * row - viewY;
 	var posZ = viewZ + 1000.0;
 	if(posZ < 1.0) {
 		posZ = 1.0;
@@ -28993,71 +29052,95 @@ oge2d_system_Tilemap.drawCell = function(viewX,viewY,viewZ,col,row) {
 	var _g1 = 0;
 	while(_g1 < layers) {
 		var i = _g1++;
-		var tileset = oge2d_system_Tilemap.tilesets[cell.tilesets[i]];
+		var tileset = tilemap.tilesets[cell.tilesets[i]];
 		var tile = tileset.tiles[cell.tiles[i]];
+		var idx1 = tilemap.indices[cell.tilesets[i]];
 		var buffer = tileset.buffer;
 		var texWidth = tileset.imageWidth;
 		var texHeight = tileset.imageHeight;
 		var offsetX = tile.offsetX[0];
 		var offsetY = tile.offsetY[0];
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,0,posX);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,1,posY + height);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,2,posZ);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,3,offsetX / texWidth);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,4,(offsetY + height) / texHeight);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,5,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,6,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,7,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,8,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,9,posX);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,10,posY);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,11,posZ);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,12,offsetX / texWidth);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,13,offsetY / texHeight);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,14,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,15,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,16,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,17,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,18,posX + width);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,19,posY);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,20,posZ);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,21,(offsetX + width) / texWidth);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,22,offsetY / texHeight);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,23,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,24,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,25,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,26,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,27,posX + width);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,28,posY + height);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,29,posZ);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,30,(offsetX + width) / texWidth);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,31,(offsetY + height) / texHeight);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,32,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,33,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,34,1.0);
-		oge2d_driver_lime_RendererGL.fillBuffer(buffer,35,1.0);
-		oge2d_driver_lime_RendererGL.draw(buffer);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posX);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posY + height);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posZ);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,offsetX / texWidth);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,(offsetY + height) / texHeight);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posX);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posY);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posZ);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,offsetX / texWidth);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,offsetY / texHeight);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posX + width);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posY);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posZ);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,(offsetX + width) / texWidth);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,offsetY / texHeight);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posX + width);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posY + height);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posZ);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,(offsetX + width) / texWidth);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,(offsetY + height) / texHeight);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,1.0);
+		tilemap.indices[cell.tilesets[i]] = idx1;
 	}
 };
-oge2d_system_Tilemap.drawTilemap = function(scene,viewX,viewY,viewZ) {
-	var gapX = viewX % oge2d_system_Tilemap.tileWidth;
-	var gapY = viewY % oge2d_system_Tilemap.tileHeight;
-	var col = (viewX - gapX) / oge2d_system_Tilemap.tileWidth | 0;
-	var row = (viewY - gapY) / oge2d_system_Tilemap.tileHeight | 0;
-	var startX = col * oge2d_system_Tilemap.tileWidth;
-	var startY = row * oge2d_system_Tilemap.tileHeight;
+oge2d_system_Tilemap.drawTilemap = function(tilemapName,scene,viewX,viewY,viewZ) {
+	var _this = oge2d_system_Tilemap._tilemaps;
+	var tilemap = __map_reserved[tilemapName] != null?_this.getReserved(tilemapName):_this.h[tilemapName];
+	if(tilemap == null) {
+		return;
+	}
+	var gapX = viewX % tilemap.tileWidth;
+	var gapY = viewY % tilemap.tileHeight;
+	var col = (viewX - gapX) / tilemap.tileWidth | 0;
+	var row = (viewY - gapY) / tilemap.tileHeight | 0;
+	var startX = col * tilemap.tileWidth;
+	var startY = row * tilemap.tileHeight;
 	var endX = viewX + scene.game.width;
 	var endY = viewY + scene.game.height;
+	var _g1 = 0;
+	var _g = tilemap.indices.length;
+	while(_g1 < _g) tilemap.indices[_g1++] = 0;
 	while(startY < endY) {
 		var currentX = startX;
 		var column = col;
 		while(currentX < endX) {
-			oge2d_system_Tilemap.drawCell(viewX,viewY,viewZ,column,row);
+			oge2d_system_Tilemap.drawCell(tilemap,viewX,viewY,viewZ,column,row);
 			++column;
-			currentX += oge2d_system_Tilemap.tileWidth;
+			currentX += tilemap.tileWidth;
 		}
 		++row;
-		startY += oge2d_system_Tilemap.tileHeight;
+		startY += tilemap.tileHeight;
+	}
+	var _g11 = 0;
+	var _g2 = tilemap.indices.length;
+	while(_g11 < _g2) {
+		var i = _g11++;
+		var idx = tilemap.indices[i];
+		if(idx > 0) {
+			var buffer = tilemap.tilesets[i].buffer;
+			var lastIdx = buffer.count * 36;
+			while(idx + 9 <= lastIdx) {
+				oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx + 9 - 1,0.0);
+				idx += 9;
+			}
+			oge2d_driver_lime_RendererGL.draw(buffer);
+		}
 	}
 };
 oge2d_system_Tilemap.prototype = {
@@ -29087,8 +29170,12 @@ oge2d_system_Tilemap.prototype = {
 		if(display == null) {
 			return;
 		}
+		var tilemapName = stage.tilemap;
+		if(tilemapName == null || tilemapName.length <= 0) {
+			return;
+		}
 		if(sprite != null && sprite.enabled) {
-			oge2d_system_Tilemap.drawTilemap(sprite.scene,stage.viewX | 0,stage.viewY | 0,display.posZ | 0);
+			oge2d_system_Tilemap.drawTilemap(tilemapName,sprite.scene,stage.viewX | 0,stage.viewY | 0,display.posZ | 0);
 		}
 	}
 	,end: function(scene) {
@@ -30832,13 +30919,6 @@ oge2d_script_Script.STATE_FAIL = 5;
 oge2d_script_Script.STATE_SUCCESS = 6;
 oge2d_system_Event._dispatching = false;
 oge2d_system_Text.DEFAULT_MAX_LENGTH = 16;
-oge2d_system_Tilemap.tilesets = [];
-oge2d_system_Tilemap.$name = "";
-oge2d_system_Tilemap.tileWidth = 0;
-oge2d_system_Tilemap.tileHeight = 0;
-oge2d_system_Tilemap.columnCount = 0;
-oge2d_system_Tilemap.rowCount = 0;
-oge2d_system_Tilemap.cells = [];
 unifill_Unicode.minCodePoint = 0;
 unifill_Unicode.maxCodePoint = 1114111;
 unifill_Unicode.minHighSurrogate = 55296;

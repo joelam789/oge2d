@@ -114,12 +114,12 @@ class Stage implements Updater {
 		if (tilemapName != null && tilemapName.length > 0) {
 			var maxX:Float = 0;
 			var maxY:Float = 0;
-			Tilemap.loadTilemap(game, tilemapName);
-			if (Tilemap.columnCount > 0 && Tilemap.tileWidth > 0) {
-				maxX = Tilemap.columnCount * Tilemap.tileWidth - game.width;
+			var tilemap = Tilemap.loadTilemap(game, tilemapName);
+			if (tilemap != null && tilemap.columnCount > 0 && tilemap.tileWidth > 0) {
+				maxX = tilemap.columnCount * tilemap.tileWidth - game.width;
 			}
-			if (Tilemap.rowCount > 0 && Tilemap.tileHeight > 0) {
-				maxY = Tilemap.rowCount * Tilemap.tileHeight - game.height;
+			if (tilemap != null && tilemap.rowCount > 0 && tilemap.tileHeight > 0) {
+				maxY = tilemap.rowCount * tilemap.tileHeight - game.height;
 			}
 			stage.maxX = maxX > 0 ? maxX : 0;
 			stage.maxY = maxY > 0 ? maxY : 0;
