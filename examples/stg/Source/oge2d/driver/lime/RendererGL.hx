@@ -134,6 +134,8 @@ class RendererGL {
 		_gl.blendFunc(_gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA);
 		_gl.enable(_gl.BLEND);
 		
+		_gl.viewport (0, 0, _width, _height);
+		
 		// create temp display objects ...
 		_pixel = createDisplayBuffer(createSimpleTexture(1, 1, 255, 255, 255, 255));
 		
@@ -145,7 +147,6 @@ class RendererGL {
 	
 	public static function clear() {
 		if (_gl == null) return;
-		_gl.viewport (0, 0, _width, _height);
 		_gl.clear (_gl.COLOR_BUFFER_BIT | _gl.DEPTH_BUFFER_BIT);
 	}
 	

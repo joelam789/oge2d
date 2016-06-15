@@ -10,6 +10,7 @@ import flash.events.Event;
 
 import flash.geom.Point;
 import flash.geom.Matrix3D;
+import flash.geom.Rectangle;
 
 import flash.display.Loader;
 import flash.display.Bitmap;
@@ -17,6 +18,7 @@ import flash.display.BitmapData;
 import flash.display.Stage;
 import flash.display.Stage3D;
 import flash.display3D.Context3D;
+import flash.display3D.Context3DBufferUsage;
 import flash.display3D.Context3DCompareMode;
 import flash.display3D.Context3DTextureFormat;
 import flash.display3D.Context3DBlendFactor;
@@ -25,6 +27,7 @@ import flash.display3D.Context3DTextureFilter;
 import flash.display3D.Context3DMipFilter;
 import flash.display3D.Context3DProfile;
 import flash.display3D.Context3DRenderMode;
+import flash.display3D.Context3DClearMask;
 import flash.display3D.VertexBuffer3D;
 import flash.display3D.IndexBuffer3D;
 import flash.display3D.textures.Texture;
@@ -63,13 +66,6 @@ class RendererStage3D {
 	static var _width:Int = 640;
 	static var _height:Int = 480;
 	
-	static var _lastRed:Float = 0;
-	static var _lastGreen:Float = 0;
-	static var _lastBlue:Float = 0;
-	static var _lastAlpha:Float = 1;
-	
-	static var _updatable: Bool = false;
-	
 	static var _pixel: DisplayBufferStage3D = null;
 
 	public function new() {
@@ -91,8 +87,12 @@ class RendererStage3D {
 			
 			_context3d = _stage3d.context3D;
 			_context3d.enableErrorChecking = true;
-			_context3d.configureBackBuffer(_width, _height, 2, true);
 			
+			_stage3d.x = 0; _stage3d.y = 0;
+			_context3d.configureBackBuffer(_width, _height, 2, true);
+			_context3d.setRenderToBackBuffer();
+			_context3d.setScissorRectangle(new Rectangle(0, 0, _width, _height));
+
 			_context3d.setDepthTest(true, Context3DCompareMode.LESS_EQUAL);
 			_context3d.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 			
@@ -114,28 +114,23 @@ class RendererStage3D {
 			if (callback != null) callback(_width, _height);
 		});
 		
-		_stage3d.requestContext3D(Context3DRenderMode.AUTO,  Context3DProfile.BASELINE); // need higher profile?
+		_stage3d.requestContext3D(Std.string(Context3DRenderMode.AUTO),  Context3DProfile.BASELINE); // need higher profile?
 		
 		return true;
 	}
 	
 	public static function clear() {
-		if (_context3d == null) return;
-		_context3d.clear(_lastRed, _lastGreen, _lastBlue, _lastAlpha);
-		_updatable = true;
+		if (_stage3d == null || _context3d == null) return;
+		_context3d.clear(0, 0, 0, 1, 1, 0, Context3DClearMask.COLOR | Context3DClearMask.DEPTH); // clear
 	}
 	
 	public static function clearColor(red: Float, green: Float, blue: Float, alpha: Float) {
 		if (_context3d == null) return;
 		_context3d.clear(red, green, blue, alpha);
-		_lastRed = red;
-		_lastGreen = green;
-		_lastBlue = blue;
-		_lastAlpha = alpha;
 	}
 	
 	public static function draw(buffer: DisplayBufferStage3D) {
-		if (_context3d == null || _updatable == false || buffer == null) return;
+		if (_context3d == null || buffer == null) return;
 		if (buffer.texture == null || buffer.texture.data == null || buffer.vertices == null || buffer.count <= 0) return;
 		
 		buffer.vertexBuffer.uploadFromVector(buffer.vertices, 0, 4 * buffer.count);
@@ -222,7 +217,8 @@ class RendererStage3D {
 		if (_context3d == null || tex == null || size <= 0) return null;
 		var buffer: DisplayBufferStage3D = new DisplayBufferStage3D();
 		buffer.texture = tex;
-		buffer.vertexBuffer = _context3d.createVertexBuffer(size * 4, 9);
+		// the last parameter of createVertexBuffer() needs at least Flash12/AIR4 
+		buffer.vertexBuffer = _context3d.createVertexBuffer(size * 4, 9, Context3DBufferUsage.DYNAMIC_DRAW);
 		buffer.indexBuffer = _context3d.createIndexBuffer(size * 6);
 		buffer.vertices = new Vector<Float>(size * 4 * 9); // 4 points for a rect, every point contains x,y,z,u,v,r,g,b,a
 		buffer.indices = new Vector<UInt>(size * 6); // 3 points for a triangle, 2 triangles for a rect
@@ -259,9 +255,8 @@ class RendererStage3D {
 	}
 	
 	public static function update() {
-		if (_context3d == null || _updatable == false) return;
+		if (_context3d == null) return;
 		_context3d.present();
-		_updatable = false;
 	}
 	
 }

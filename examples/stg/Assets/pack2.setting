@@ -3,6 +3,8 @@
 	[
 		"Assets/images/battlebg",
 		"Assets/jsons/path/",
+		"Assets/jsons/tileset/",
+		"Assets/jsons/tilemap/",
 		"Assets/musics/battle",
 		"Assets/musics/boss",
 		"Assets/musics/lose",
@@ -21,7 +23,8 @@
 		"Assets/sprites/icon",
 		"Assets/sprites/label",
 		"Assets/sprites/medal",
-		"Assets/sprites/player"
+		"Assets/sprites/player",
+		"Assets/sprites/tilestage"
 	],
 	
 	"extmap":

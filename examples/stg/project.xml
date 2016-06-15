@@ -27,7 +27,7 @@
 	 -->
 	
 	<!-- mini required version for stage3d -->
-	<haxeflag name="-swf-version 11.6" if="flash" />
+	<haxeflag name="-swf-version 16" if="flash" />
 	
 	<!-- need to include system/library classes -->
 	<haxeflag name="--macro include('oge2d.system')" />

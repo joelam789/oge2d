@@ -109,29 +109,46 @@ class Stage implements Updater {
 		if (scene == null) return;
 		var stage = scene.components["stage"];
 		if (stage == null) return;
-		var tiles: Array<Sprite> = new Array<Sprite>();
-		var blockNames: Array<String> = cast stage.blocks;
-		var offsetValues: Array<Float> = cast stage.offsets;
-		var idx: Int = 0;
-		var maxX:Float = 0;
-		var maxY:Float = 0;
-		for (blockName in blockNames) {
-			var blockSprite = scene.sprites[blockName];
-			var graph = blockSprite.components["graphic"];
-			var display = blockSprite.components["display"];
-			var offsetX = offsetValues[idx++] + graph.width - scene.game.width;
-			var offsetY = offsetValues[idx++] + graph.height - scene.game.height;
-			if (offsetX > maxX) maxX = offsetX;
-			if (offsetY > maxY) maxY = offsetY;
-			display.visible = true;
-			display.anchorX = 0.0;
-			display.anchorY = 0.0;
-			display.posZ = -1;
-			tiles.push(blockSprite);
+		
+		var tilemapName: String = stage.tilemap;
+		if (tilemapName != null && tilemapName.length > 0) {
+			var maxX:Float = 0;
+			var maxY:Float = 0;
+			Tilemap.loadTilemap(game, tilemapName);
+			if (Tilemap.columnCount > 0 && Tilemap.tileWidth > 0) {
+				maxX = Tilemap.columnCount * Tilemap.tileWidth - game.width;
+			}
+			if (Tilemap.rowCount > 0 && Tilemap.tileHeight > 0) {
+				maxY = Tilemap.rowCount * Tilemap.tileHeight - game.height;
+			}
+			stage.maxX = maxX > 0 ? maxX : 0;
+			stage.maxY = maxY > 0 ? maxY : 0;
+			
+		} else {
+			var tiles: Array<Sprite> = new Array<Sprite>();
+			var blockNames: Array<String> = cast stage.blocks;
+			var offsetValues: Array<Float> = cast stage.offsets;
+			var idx: Int = 0;
+			var maxX:Float = 0;
+			var maxY:Float = 0;
+			for (blockName in blockNames) {
+				var blockSprite = scene.sprites[blockName];
+				var graph = blockSprite.components["graphic"];
+				var display = blockSprite.components["display"];
+				var offsetX = offsetValues[idx++] + graph.width - game.width;
+				var offsetY = offsetValues[idx++] + graph.height - game.height;
+				if (offsetX > maxX) maxX = offsetX;
+				if (offsetY > maxY) maxY = offsetY;
+				display.visible = true;
+				display.anchorX = 0.0;
+				display.anchorY = 0.0;
+				display.posZ = -1;
+				tiles.push(blockSprite);
+			}
+			stage.maxX = maxX > 0 ? maxX : 0;
+			stage.maxY = maxY > 0 ? maxY : 0;
+			stage.tiles = tiles;
 		}
-		stage.maxX = maxX > 0 ? maxX : 0;
-		stage.maxY = maxY > 0 ? maxY : 0;
-		stage.tiles = tiles;
 	}
 	
 	public function include(sprite:Sprite):Void {
@@ -171,13 +188,16 @@ class Stage implements Updater {
 		if (stage.viewY < 0) stage.viewY = 0;
 		if (stage.viewY > stage.maxY) stage.viewY = stage.maxY;
 		
-		var idx: Int = 0;
-		var tiles: Array<Sprite> = cast stage.tiles;
-		var offsets: Array<Float> = cast stage.offsets;
-		for (tile in tiles) {
-			var display = tile.components["display"];
-			display.posX = 0 - stage.viewX + offsets[idx++];
-			display.posY = 0 - stage.viewY + offsets[idx++];
+		var tilemapName: String = stage.tilemap;
+		if (tilemapName == null || tilemapName.length <= 0) {
+			var idx: Int = 0;
+			var tiles: Array<Sprite> = cast stage.tiles;
+			var offsets: Array<Float> = cast stage.offsets;
+			for (tile in tiles) {
+				var display = tile.components["display"];
+				display.posX = 0 - stage.viewX + offsets[idx++];
+				display.posY = 0 - stage.viewY + offsets[idx++];
+			}
 		}
 	}
 	

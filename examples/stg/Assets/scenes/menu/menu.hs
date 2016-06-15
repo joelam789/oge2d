@@ -34,7 +34,7 @@ function onKeyUp(scene, key) {
 		var color = game.sys("color");
 		if (color.isTwinkling(scene.spr("item1"))) return;
 		
-		color.twinkle(scene.spr("item1"), 5, 200);
+		color.flicker(scene.spr("item1"), 5, 200);
 		
 		game.sound("select").play();
 		

@@ -1,0 +1,22 @@
+{
+	"base":
+	{
+		"enabled": true,
+		"template": "tilestage",
+		"count": 1
+	},
+	
+	"preloads":
+	{
+		"images": ["main"],
+		"jsons":  ["tileset/stgtileset", "tilemap/stgstage"]
+	},
+	
+	"display":
+	{
+		"posX": 0,
+		"posY": 0,
+		"posZ": -1
+	}
+	
+}

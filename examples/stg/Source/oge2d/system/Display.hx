@@ -72,11 +72,13 @@ class Display implements Updater {
 	
 	public static function sortSpritesByPosition(scene: Scene) {
 		if (scene == null) return;
+		
 		scene.sort(function(a, b) {
+			if (!a.enabled || !b.enabled) return 0;
 			var s1 = a.components["display"];
-			if (s1 == null) return 0;
+			if (s1 == null || s1.visible == false) return 0;
 			var s2 = b.components["display"];
-			if (s2 == null) return 0;
+			if (s2 == null || s2.visible == false) return 0;
 			if (s1.posZ > s2.posZ) return 1;
 			else if (s1.posZ < s2.posZ) return -1;
 			else {
@@ -89,6 +91,7 @@ class Display implements Updater {
 			}
 			return 0;
 		});
+		
 	}
 	
 	public static function getDisplay(sprite: Sprite): Dynamic {
@@ -151,7 +154,7 @@ class Display implements Updater {
 		
 		var posZ:Float = z + 1000.0;
 		if (posZ < 1.0) posZ = 1.0;
-		posZ = 1.0 / posZ;
+		posZ = 1.0 + 1.0 / posZ;
 		
 		var posX1:Float = x;
 		var posY1:Float = y;
@@ -318,7 +321,7 @@ class Display implements Updater {
 		
 		// in OpenGL/WebGL, normally, "zNear" <= "zFar", and "zNear" is in front of "zFar".
 		// but here we hope that big z is in front of small z, just like z-index in CSS.
-		posZ = 1.0 / posZ;
+		posZ = 1.0 + 1.0 / posZ;
 		
 		// start to set vertices ...
 		

@@ -21,7 +21,7 @@ class Sprite {
 	public var buffer(default, default): DisplayBuffer = null;
 	
 	public var enabled(default, set): Bool = false;
-	public var game(default, null): Game;
+	public var game(default, null): Game = null;
 	
 	public var components(default, null): Map<String, Dynamic> = null;
 	

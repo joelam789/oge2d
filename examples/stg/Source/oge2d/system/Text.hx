@@ -88,7 +88,7 @@ class Text implements Updater {
 		
 		// in OpenGL/WebGL, normally, "zNear" <= "zFar", and "zNear" is in front of "zFar".
 		// but here we hope that bigger z is in front of smaller z, just like z-index in CSS.
-		posZ = 1.0 / posZ;
+		posZ = 1.0 + 1.0 / posZ;
 		
 		// get others ...
 		

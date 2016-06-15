@@ -17,6 +17,8 @@
 		"collision":   "oge2d.system.Collision",
 		
 		"text":        "oge2d.system.Text",
+		"tilemap":     "oge2d.system.Tilemap",
+		
 		"event":       "oge2d.system.Event",
 		"display":     "oge2d.system.Display"
 	},

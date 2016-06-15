@@ -63,7 +63,7 @@ class Color implements Updater {
 		colorTo(sprite, [1, 1, 1, 1, 0 - 1.0 / steps], steps, callback);
 	}
 	
-	public static function twinkle(sprite: Sprite, interval: Int, times: Int = -1, gradual: Bool = false, ?callback: Sprite->Void) {
+	public static function flicker(sprite: Sprite, interval: Int, times: Int = -1, gradual: Bool = false, ?callback: Sprite->Void) {
 		if (times == 0) {
 			if (callback != null) callback(sprite);
 			return;
@@ -80,7 +80,7 @@ class Color implements Updater {
 				var color2 = spr2.components["color"];
 				if (color2.times != 0) {
 					if (color2.times > 0) color2.times = color2.times - 1;
-					twinkle(spr2, interval, color2.times, color2.gradual, callback);
+					flicker(spr2, interval, color2.times, color2.gradual, callback);
 				}
 			});
 		});

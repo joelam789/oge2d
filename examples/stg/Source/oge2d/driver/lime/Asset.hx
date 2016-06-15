@@ -40,6 +40,10 @@ class Asset {
 	static var _thread: Thread = null;
 	static var _processing: Bool = false;
 	static var _results: List<Dynamic> = new List<Dynamic>();
+	
+	//static var _mtx: Mutex = null;
+	//static var _bgq: List<Dynamic> = new List<Dynamic>();
+	
 	#end
 	
 	static var _texts: Map<String, String> = new Map<String, String>();
@@ -58,13 +62,41 @@ class Asset {
 	
 	#if cpp
 	public static function processPending() {
-		if (_processing || _results.length <= 0) return; // no need to lock...
+		
 		var msg: Dynamic = null;
+		
+		if (_processing || _results.length <= 0) return; // no need to lock...
+		
 		_mutex.acquire();
-		msg = _results.pop();
+		if (_results.length > 0) msg = _results.pop();
 		_mutex.release();
 		if (msg != null && msg.callback != null) msg.callback(msg.result);
+		
 	}
+	
+	
+	private static function takeMessage(): Dynamic {
+		return Thread.readMessage(true);
+		/*
+		var msg = null;
+		while (msg == null) {
+			_mtx.acquire();
+			if (_bgq.length > 0) msg = _bgq.pop();
+			_mtx.release();
+			Sys.sleep(0.05);
+		}
+		return msg;
+		*/
+	}
+	
+	
+	private static function postMessage(msg: Dynamic): Void {
+		_thread.sendMessage(msg);
+		//_mtx.acquire();
+		//_bgq.add(msg);
+		//_mtx.release();
+	}
+	
 	#end
 	
 	public static function init(): Void {
@@ -84,10 +116,16 @@ class Asset {
 		}
 		#end
 		
+		
 		#if cpp
+		
+		// seems loading res in another thread finally works in Haxe 3.3 + hxcpp 3.3.49  ...  T_T
+		
 		_mutex = new Mutex();
+		//_mtx = new Mutex();
+		
 		_thread = Thread.create(function() {
-			var msg = Thread.readMessage(true);
+			var msg = takeMessage();
 			while (msg != null && msg.process != null) {
 				_processing = true;
 				var pending = {
@@ -104,9 +142,10 @@ class Asset {
 				_results.add(pending);
 				_mutex.release();
 				_processing = false;
-				msg = Thread.readMessage(true);
+				msg = takeMessage();
 			}
 		});
+		
 		#end
 		
 		_buf = Bytes.alloc(65536); // 64k global buffer
@@ -181,7 +220,7 @@ class Asset {
 				callback: callback
 				
 			}
-			_thread.sendMessage(msg);
+			postMessage(msg);
 			
 			#else
 			callback(null); // not support
@@ -276,7 +315,7 @@ class Asset {
 						}
 					}
 				}
-				_thread.sendMessage(msg);
+				postMessage(msg);
 				
 				#else
 				
@@ -330,7 +369,7 @@ class Asset {
 						}
 					}
 				}
-				_thread.sendMessage(msg);
+				postMessage(msg);
 				
 				#else
 				
@@ -408,7 +447,7 @@ class Asset {
 						}
 					}
 				}
-				_thread.sendMessage(msg);
+				postMessage(msg);
 				
 				#end
 			}
@@ -684,7 +723,7 @@ class Asset {
 						}
 					}
 				}
-				_thread.sendMessage(msg);
+				postMessage(msg);
 				
 				#end
 				
@@ -726,7 +765,7 @@ class Asset {
 						}
 					}
 				}
-				_thread.sendMessage(msg);
+				postMessage(msg);
 				
 				#else
 				_queue.remove(fileName);
@@ -772,7 +811,7 @@ class Asset {
 						}
 					}
 				}
-				_thread.sendMessage(msg);
+				postMessage(msg);
 				
 				#else
 				_queue.remove(fileName);

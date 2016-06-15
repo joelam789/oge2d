@@ -2,7 +2,7 @@
 	"preloads":
 	{
 		"images": ["main"],
-		"jsons":  ["path/circle", "path/deepv"]
+		"jsons":  ["path/circle", "path/deepv", "path/hill"]
 	},
 	
 	"events":

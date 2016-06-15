@@ -25,7 +25,7 @@ function onPlot(sprite, plot) {
 			player.get("display").posX = 320;
 			player.get("display").posY = 480 + 150;
 			
-			game.sys("color").twinkle(player, 2, 20);
+			game.sys("color").flicker(player, 2, 20);
 			
 			plot.moveTo(player, 320, 350, 10);
 			
