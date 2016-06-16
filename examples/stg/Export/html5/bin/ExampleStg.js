@@ -35,7 +35,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "33", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "65", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	ApplicationMain.app.exec();
@@ -22807,8 +22807,8 @@ oge2d_driver_lime_Asset.loadBytes = function(url,callback) {
 		new lime_net_HTTPRequest().load(url).onComplete(function(data) {
 			callback(data);
 		}).onError(function(err) {
-			haxe_Log.trace("Failed to load data from url: " + url,{ fileName : "Asset.hx", lineNumber : 171, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
-			haxe_Log.trace(err,{ fileName : "Asset.hx", lineNumber : 171, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
+			haxe_Log.trace("Failed to load data from url: " + url,{ fileName : "Asset.hx", lineNumber : 205, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
+			haxe_Log.trace(err,{ fileName : "Asset.hx", lineNumber : 205, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
 			callback(null);
 		});
 	} else {
@@ -22857,7 +22857,7 @@ oge2d_driver_lime_Asset.loadJsonObject = function(url,callback) {
 				result = JSON.parse(text);
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 256, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 290, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
 			}
 			if(callback != null) {
 				callback(result);
@@ -22885,7 +22885,7 @@ oge2d_driver_lime_Asset.loadJsonData = function(url,callback) {
 				result = JSON.parse(bytes.toString());
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 276, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 310, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
 			}
 			if(result != null) {
 				var _this1 = oge2d_driver_lime_Asset._jsons;
@@ -23466,7 +23466,7 @@ oge2d_driver_lime_Asset.loadFiles = function(files,onProgress,onComplete) {
 					};
 				})(fileName1));
 			} else {
-				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 855, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
+				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 889, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
 				oge2d_driver_lime_Asset._queue.remove(fileName1[0]);
 				if(onProgress != null) {
 					onProgress(files.length - oge2d_driver_lime_Asset._queue.length,files.length);
@@ -28898,6 +28898,7 @@ oge2d_system_Tileset.prototype = {
 };
 var oge2d_system_TilemapData = function() {
 	this.cells = null;
+	this.updated = null;
 	this.rowCount = 0;
 	this.columnCount = 0;
 	this.tileHeight = 0;
@@ -28916,6 +28917,7 @@ oge2d_system_TilemapData.prototype = {
 	,tileHeight: null
 	,columnCount: null
 	,rowCount: null
+	,updated: null
 	,cells: null
 	,__class__: oge2d_system_TilemapData
 };
@@ -28938,7 +28940,7 @@ oge2d_system_Tilemap.loadTileset = function(game,tilesetName) {
 	}
 	var tilesetJson = oge2d_driver_lime_Asset.getJsonData(game.getJsonFilePath(tilesetName,"tileset"));
 	if(tilesetJson == null) {
-		haxe_Log.trace("Failed to load tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 69, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
+		haxe_Log.trace("Failed to load tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 73, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
 		return null;
 	}
 	var result = null;
@@ -28958,14 +28960,14 @@ oge2d_system_Tilemap.loadTileset = function(game,tilesetName) {
 	}
 	var tex = oge2d_driver_lime_Asset.getTexture(game.getImageFilePath(tilesetJson.image));
 	if(tex == null) {
-		haxe_Log.trace("Failed to load texture: " + tilesetJson.image,{ fileName : "Tilemap.hx", lineNumber : 87, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
+		haxe_Log.trace("Failed to load texture: " + tilesetJson.image,{ fileName : "Tilemap.hx", lineNumber : 91, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
 	} else {
 		result = new oge2d_system_Tileset();
-		result.buffer = oge2d_driver_lime_RendererGL.createDisplayBuffer(tex,col * row);
+		result.buffer = oge2d_driver_lime_RendererGL.createDisplayBuffer(tex,col * row * 1.5 | 0);
 		result.imageWidth = tex.width;
 		result.imageHeight = tex.height;
 		if(result.buffer == null) {
-			haxe_Log.trace("Failed to create display buffer for tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 94, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
+			haxe_Log.trace("Failed to create display buffer for tileset: " + tilesetName,{ fileName : "Tilemap.hx", lineNumber : 98, className : "oge2d.system.Tilemap", methodName : "loadTileset"});
 			result = null;
 		}
 	}
@@ -28993,7 +28995,7 @@ oge2d_system_Tilemap.loadTilemap = function(game,tilemapName) {
 	}
 	var tilemapJson = oge2d_driver_lime_Asset.getJsonData(game.getJsonFilePath(tilemapName,"tilemap"));
 	if(tilemapJson == null) {
-		haxe_Log.trace("Failed to load tilemap: " + tilemapName,{ fileName : "Tilemap.hx", lineNumber : 118, className : "oge2d.system.Tilemap", methodName : "loadTilemap"});
+		haxe_Log.trace("Failed to load tilemap: " + tilemapName,{ fileName : "Tilemap.hx", lineNumber : 122, className : "oge2d.system.Tilemap", methodName : "loadTilemap"});
 		return null;
 	}
 	var result = null;
@@ -29021,6 +29023,7 @@ oge2d_system_Tilemap.loadTilemap = function(game,tilemapName) {
 		result.tileHeight = tilemapJson.tileHeight;
 		result.columnCount = tilemapJson.columnCount;
 		result.rowCount = tilemapJson.rowCount;
+		result.updated = new List();
 		result.cells = tilemapJson.cells;
 	}
 	if(result != null) {
@@ -29033,7 +29036,7 @@ oge2d_system_Tilemap.loadTilemap = function(game,tilemapName) {
 	}
 	return result;
 };
-oge2d_system_Tilemap.drawCell = function(tilemap,viewX,viewY,viewZ,col,row) {
+oge2d_system_Tilemap.drawCell = function(scene,tilemap,viewX,viewY,viewZ,col,row) {
 	var idx = row * tilemap.columnCount + col;
 	if(idx < 0 || idx >= tilemap.cells.length) {
 		return;
@@ -29052,14 +29055,44 @@ oge2d_system_Tilemap.drawCell = function(tilemap,viewX,viewY,viewZ,col,row) {
 	var _g1 = 0;
 	while(_g1 < layers) {
 		var i = _g1++;
-		var tileset = tilemap.tilesets[cell.tilesets[i]];
-		var tile = tileset.tiles[cell.tiles[i]];
-		var idx1 = tilemap.indices[cell.tilesets[i]];
+		var tilesetId = cell.tilesets[i];
+		var tileId = cell.tiles[i];
+		var tileset = tilemap.tilesets[tilesetId];
+		var tile = tileset.tiles[tileId];
+		var idx1 = tilemap.indices[tilesetId];
 		var buffer = tileset.buffer;
 		var texWidth = tileset.imageWidth;
 		var texHeight = tileset.imageHeight;
-		var offsetX = tile.offsetX[0];
-		var offsetY = tile.offsetY[0];
+		var totalTicks = tile.ticks;
+		var currentFrame = tile.current;
+		var frameInterval = tile.interval;
+		var offsetX = tile.offsetX[currentFrame];
+		var offsetY = tile.offsetY[currentFrame];
+		if(frameInterval > 0 && totalTicks >= 0) {
+			var needUpdate = true;
+			var tileCode = tilesetId * 1000000 + tileId;
+			var _g2_head = tilemap.updated.h;
+			while(_g2_head != null) {
+				var val = _g2_head.item;
+				_g2_head = _g2_head.next;
+				if(val == tileCode) {
+					needUpdate = false;
+					break;
+				}
+			}
+			if(needUpdate) {
+				if(frameInterval > totalTicks + scene.game.interval) {
+					tile.ticks = totalTicks + scene.game.interval;
+				} else {
+					currentFrame = tile.offsetX.length % (currentFrame + 1);
+					offsetX = tile.offsetX[currentFrame];
+					offsetY = tile.offsetY[currentFrame];
+					tile.current = currentFrame;
+					tile.ticks = 0;
+				}
+				tilemap.updated.add(tileCode);
+			}
+		}
 		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posX);
 		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posY + height);
 		oge2d_driver_lime_RendererGL.fillBuffer(buffer,idx1++,posZ);
@@ -29099,7 +29132,7 @@ oge2d_system_Tilemap.drawCell = function(tilemap,viewX,viewY,viewZ,col,row) {
 		tilemap.indices[cell.tilesets[i]] = idx1;
 	}
 };
-oge2d_system_Tilemap.drawTilemap = function(tilemapName,scene,viewX,viewY,viewZ) {
+oge2d_system_Tilemap.drawTilemap = function(scene,tilemapName,viewX,viewY,viewZ) {
 	var _this = oge2d_system_Tilemap._tilemaps;
 	var tilemap = __map_reserved[tilemapName] != null?_this.getReserved(tilemapName):_this.h[tilemapName];
 	if(tilemap == null) {
@@ -29113,19 +29146,20 @@ oge2d_system_Tilemap.drawTilemap = function(tilemapName,scene,viewX,viewY,viewZ)
 	var startY = row * tilemap.tileHeight;
 	var endX = viewX + scene.game.width;
 	var endY = viewY + scene.game.height;
+	tilemap.updated.clear();
 	var _g1 = 0;
 	var _g = tilemap.indices.length;
 	while(_g1 < _g) tilemap.indices[_g1++] = 0;
 	while(startY < endY) {
-		var currentX = startX;
 		var column = col;
+		var currentX = startX;
 		while(currentX < endX) {
-			oge2d_system_Tilemap.drawCell(tilemap,viewX,viewY,viewZ,column,row);
-			++column;
+			oge2d_system_Tilemap.drawCell(scene,tilemap,viewX,viewY,viewZ,column,row);
 			currentX += tilemap.tileWidth;
+			++column;
 		}
-		++row;
 		startY += tilemap.tileHeight;
+		++row;
 	}
 	var _g11 = 0;
 	var _g2 = tilemap.indices.length;
@@ -29175,7 +29209,7 @@ oge2d_system_Tilemap.prototype = {
 			return;
 		}
 		if(sprite != null && sprite.enabled) {
-			oge2d_system_Tilemap.drawTilemap(tilemapName,sprite.scene,stage.viewX | 0,stage.viewY | 0,display.posZ | 0);
+			oge2d_system_Tilemap.drawTilemap(sprite.scene,tilemapName,stage.viewX | 0,stage.viewY | 0,display.posZ | 0);
 		}
 	}
 	,end: function(scene) {

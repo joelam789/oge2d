@@ -9,8 +9,8 @@ import haxe.zip.Reader;
 
 #if cpp
 import sys.io.File;
-import cpp.vm.Thread;
-import cpp.vm.Mutex;
+//import cpp.vm.Thread;
+//import cpp.vm.Mutex;
 #end
 
 import lime.Assets;
@@ -36,13 +36,15 @@ class Asset {
 	#end
 	
 	#if cpp
-	static var _mutex: Mutex = null;
-	static var _thread: Thread = null;
+	
+	//static var _mutex: Mutex = null;
+	//static var _thread: Thread = null;
+	
 	static var _processing: Bool = false;
 	static var _results: List<Dynamic> = new List<Dynamic>();
 	
 	//static var _mtx: Mutex = null;
-	//static var _bgq: List<Dynamic> = new List<Dynamic>();
+	static var _bgq: List<Dynamic> = new List<Dynamic>();
 	
 	#end
 	
@@ -65,35 +67,58 @@ class Asset {
 		
 		var msg: Dynamic = null;
 		
+		if (_processing || _bgq.length <= 0) return; // no need to lock...
+		
+		msg = takeMessage();
+		if (msg != null && msg.process != null) {
+			_processing = true;
+			var pending = {
+				result: null,
+				callback: null
+			};
+			try {
+				pending.result = msg.process(msg.param);
+				pending.callback = msg.callback;
+			} catch (e: Dynamic) {
+				trace("Failed to process pending assets in thread: " + e);
+			}
+			//_mutex.acquire();
+			_results.add(pending);
+			//_mutex.release();
+			_processing = false;
+			//msg = takeMessage();
+		}
+		
 		if (_processing || _results.length <= 0) return; // no need to lock...
 		
-		_mutex.acquire();
+		//_mutex.acquire();
 		if (_results.length > 0) msg = _results.pop();
-		_mutex.release();
+		//_mutex.release();
 		if (msg != null && msg.callback != null) msg.callback(msg.result);
 		
 	}
 	
 	
 	private static function takeMessage(): Dynamic {
-		return Thread.readMessage(true);
-		/*
+		//return Thread.readMessage(true);
+		
 		var msg = null;
-		while (msg == null) {
-			_mtx.acquire();
+		//while (msg == null) {
+			//_mtx.acquire();
 			if (_bgq.length > 0) msg = _bgq.pop();
-			_mtx.release();
-			Sys.sleep(0.05);
-		}
+			//_mtx.release();
+			//Sys.sleep(0.05);
+		//}
 		return msg;
-		*/
+		
 	}
 	
 	
 	private static function postMessage(msg: Dynamic): Void {
-		_thread.sendMessage(msg);
+		//_thread.sendMessage(msg);
+		
 		//_mtx.acquire();
-		//_bgq.add(msg);
+		_bgq.add(msg);
 		//_mtx.release();
 	}
 	
@@ -119,11 +144,19 @@ class Asset {
 		
 		#if cpp
 		
-		// seems loading res in another thread finally works in Haxe 3.3 + hxcpp 3.3.49  ...  T_T
+		// seems loading res in another thread still failed to work stably
+		// even in Haxe 3.3 + hxcpp 3.3.49  ...  T_T 
 		
-		_mutex = new Mutex();
+		// maybe need stress test for cpp.vm.Thread + cpp.vm.Mutex (+ cpp.vm.Gc) ??
+		
+		// (but current single thread version is fine)
+		
+		// -------------------------------------------------------------------------
+		
+		//_mutex = new Mutex();
 		//_mtx = new Mutex();
 		
+		/*
 		_thread = Thread.create(function() {
 			var msg = takeMessage();
 			while (msg != null && msg.process != null) {
@@ -145,6 +178,7 @@ class Asset {
 				msg = takeMessage();
 			}
 		});
+		*/
 		
 		#end
 		

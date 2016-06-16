@@ -13,6 +13,8 @@ typedef Tile = {
 	var id: Int;
 	var offsetX: Array<Int>;
 	var offsetY: Array<Int>;
+	var ticks: Int;
+	var current: Int;
 	var interval: Int;
 }
 
@@ -44,6 +46,8 @@ class TilemapData {
 	public var tileHeight: Int = 0;
 	public var columnCount: Int = 0;
 	public var rowCount: Int = 0;
+	
+	public var updated: List<Int> = null;
 	
 	public var cells: Array<Cell> = null;
 	
@@ -87,7 +91,7 @@ class Tilemap implements Updater {
 		if (tex == null) trace("Failed to load texture: " + tilesetJson.image);
 		else {
 			result = new Tileset();
-			result.buffer = Renderer.createDisplayBuffer(tex, col * row);
+			result.buffer = Renderer.createDisplayBuffer(tex, Std.int(col * row * 1.5));
 			result.imageWidth = tex.width;
 			result.imageHeight = tex.height;
 			if (result.buffer == null) {
@@ -141,6 +145,7 @@ class Tilemap implements Updater {
 			result.tileHeight = tilemapJson.tileHeight;
 			result.columnCount = tilemapJson.columnCount;
 			result.rowCount = tilemapJson.rowCount;
+			result.updated = new List<Int>();
 			result.cells = cast tilemapJson.cells;
 		}
 		
@@ -149,7 +154,8 @@ class Tilemap implements Updater {
 		return result;
 	}
 	
-	public static function drawCell(tilemap: TilemapData, viewX: Int, viewY: Int, viewZ: Int, col: Int, row: Int) {
+	public static function drawCell(scene: Scene, tilemap: TilemapData,  
+									viewX: Int, viewY: Int, viewZ: Int, col: Int, row: Int) {
 		
 		var idx = row * tilemap.columnCount + col;
 		if (idx < 0 || idx >= tilemap.cells.length) return;
@@ -173,16 +179,45 @@ class Tilemap implements Updater {
 
 		for (i in 0...layers) {
 			
-			var tileset = tilemap.tilesets[cell.tilesets[i]];
-			var tile = tileset.tiles[cell.tiles[i]];
+			var tilesetId: Int = cell.tilesets[i];
+			var tileId: Int = cell.tiles[i];
 			
-			var idx: Int = tilemap.indices[cell.tilesets[i]];
+			var tileset = tilemap.tilesets[tilesetId];
+			var tile = tileset.tiles[tileId];
+			
+			var idx: Int = tilemap.indices[tilesetId];
 			
 			var buffer = tileset.buffer;
 			var texWidth: Float = tileset.imageWidth;
 			var texHeight: Float = tileset.imageHeight;
-			var offsetX:Float = tile.offsetX[0];
-			var offsetY:Float = tile.offsetY[0];
+			var totalTicks: Int = tile.ticks;
+			var currentFrame: Int = tile.current;
+			var frameInterval: Int = tile.interval;
+			var offsetX:Float = tile.offsetX[currentFrame];
+			var offsetY:Float = tile.offsetY[currentFrame];
+			
+			if (frameInterval > 0 && totalTicks >= 0) {
+				var needUpdate = true;
+				var tileCode: Int = tilesetId * 1000000 + tileId;
+				for (item in tilemap.updated) {
+					if (item == tileCode) {
+						needUpdate = false;
+						break;
+					}
+				}
+				if (needUpdate) {
+					if (frameInterval > totalTicks + scene.game.interval) {
+						tile.ticks = totalTicks + scene.game.interval;
+					} else {
+						currentFrame = tile.offsetX.length % (currentFrame + 1);
+						offsetX = tile.offsetX[currentFrame];
+						offsetY = tile.offsetY[currentFrame];
+						tile.current = currentFrame;
+						tile.ticks = 0;
+					}
+					tilemap.updated.add(tileCode);
+				}
+			}
 			
 			// bottom-left (0)
 			Renderer.fillBuffer(buffer, idx++, posX); // x
@@ -233,7 +268,7 @@ class Tilemap implements Updater {
 		}
 	}
 	
-	public static function drawTilemap(tilemapName: String, scene: Scene, viewX: Int, viewY: Int, viewZ: Int) {
+	public static function drawTilemap(scene: Scene, tilemapName: String, viewX: Int, viewY: Int, viewZ: Int) {
 		
 		var tilemap: TilemapData = _tilemaps.get(tilemapName);
 		if (tilemap == null) return;
@@ -247,18 +282,20 @@ class Tilemap implements Updater {
 		var endX = viewX + scene.game.width;
 		var endY = viewY + scene.game.height;
 		
+		tilemap.updated.clear();
+		
 		for (i in 0...tilemap.indices.length) tilemap.indices[i] = 0;
 		
 		while (startY < endY) {
-			var currentX: Int = startX;
 			var column = col;
+			var currentX: Int = startX;
 			while (currentX < endX) {
-				drawCell(tilemap, viewX, viewY, viewZ, column, row);
-				column++;
+				drawCell(scene, tilemap, viewX, viewY, viewZ, column, row);
 				currentX += tilemap.tileWidth;
+				column++;
 			}
-			row++;
 			startY += tilemap.tileHeight;
+			row++;
 		}
 		
 		for (i in 0...tilemap.indices.length) {
@@ -316,7 +353,8 @@ class Tilemap implements Updater {
 		if (tilemapName == null || tilemapName.length <= 0) return;
 		
 		if (sprite != null && sprite.enabled) {
-			drawTilemap(tilemapName, sprite.scene, Std.int(stage.viewX), Std.int(stage.viewY), Std.int(display.posZ));
+			drawTilemap(sprite.scene, tilemapName, 
+						Std.int(stage.viewX), Std.int(stage.viewY), Std.int(display.posZ));
 		}
 		
 	}
