@@ -22,16 +22,16 @@
     <class path="C:\HaxeToolkit\haxe\lib\hscript\2,0,7" />
     <class path="C:\HaxeToolkit\haxe\lib\unifill\0,4,1" />
     <class path="Source" />
-    <class path="Export\flash\haxe" />
+    <class path="Export\html5\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="lime=2.9.1&#xA;hxsl=2.0.6&#xA;format=3.2.1&#xA;hscript=2.0.7&#xA;unifill=0.4.1&#xA;hscriptPos&#xA;tools=2.9.1&#xA;no-compilation&#xA;web&#xA;display" />
+    <option directives="lime=2.9.1&#xA;hxsl=2.0.6&#xA;format=3.2.1&#xA;hscript=2.0.7&#xA;unifill=0.4.1&#xA;hscriptPos&#xA;tools=2.9.1&#xA;no-compilation&#xA;webgl&#xA;lime-html5&#xA;html5&#xA;web&#xA;html5&#xA;html&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="False" />
-    <option additional="#--macro keep('IntIterator')&#xA;-swf-version 16&#xA;--macro include('oge2d.system')&#xA;--macro include('oge2d.library')&#xA;--macro include('example.stg')&#xA;--macro oge2d.build.Macro.compileScripts('Assets')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack.setting')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets1.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack1.setting')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/flash/bin/assets/assets2.pack', '.setting;.hs;.svg;.ogg', 'Assets/pack2.setting')&#xA;--macro oge2d.build.Macro.cleanup('Assets')&#xA;-swf-version 11.2&#xA;-debug " />
+    <option additional="#--macro keep('IntIterator')&#xA;--macro include('oge2d.system')&#xA;--macro include('oge2d.library')&#xA;--macro include('example.stg')&#xA;--macro oge2d.build.Macro.compileScripts('Assets')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/html5/bin/assets/assets.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack.setting')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/html5/bin/assets/assets1.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack1.setting')&#xA;--macro oge2d.build.Macro.pack('Assets', 'assets', 'Export/html5/bin/assets/assets2.pack', '.setting;.hs;.svg;.mp3', 'Assets/pack2.setting')&#xA;--macro oge2d.build.Macro.cleanup('Assets')&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
