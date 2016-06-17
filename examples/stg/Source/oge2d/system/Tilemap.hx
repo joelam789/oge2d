@@ -209,7 +209,7 @@ class Tilemap implements Updater {
 					if (frameInterval > totalTicks + scene.game.interval) {
 						tile.ticks = totalTicks + scene.game.interval;
 					} else {
-						currentFrame = tile.offsetX.length % (currentFrame + 1);
+						currentFrame = (currentFrame + 1) % tile.offsetX.length;
 						offsetX = tile.offsetX[currentFrame];
 						offsetY = tile.offsetY[currentFrame];
 						tile.current = currentFrame;

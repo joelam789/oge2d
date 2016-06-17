@@ -35,7 +35,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "65", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "78", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	ApplicationMain.app.exec();
@@ -22807,8 +22807,8 @@ oge2d_driver_lime_Asset.loadBytes = function(url,callback) {
 		new lime_net_HTTPRequest().load(url).onComplete(function(data) {
 			callback(data);
 		}).onError(function(err) {
-			haxe_Log.trace("Failed to load data from url: " + url,{ fileName : "Asset.hx", lineNumber : 205, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
-			haxe_Log.trace(err,{ fileName : "Asset.hx", lineNumber : 205, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
+			haxe_Log.trace("Failed to load data from url: " + url,{ fileName : "Asset.hx", lineNumber : 170, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
+			haxe_Log.trace(err,{ fileName : "Asset.hx", lineNumber : 170, className : "oge2d.driver.lime.Asset", methodName : "loadBytes"});
 			callback(null);
 		});
 	} else {
@@ -22857,7 +22857,7 @@ oge2d_driver_lime_Asset.loadJsonObject = function(url,callback) {
 				result = JSON.parse(text);
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 290, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 255, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
 			}
 			if(callback != null) {
 				callback(result);
@@ -22885,7 +22885,7 @@ oge2d_driver_lime_Asset.loadJsonData = function(url,callback) {
 				result = JSON.parse(bytes.toString());
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 310, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 275, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
 			}
 			if(result != null) {
 				var _this1 = oge2d_driver_lime_Asset._jsons;
@@ -23466,7 +23466,7 @@ oge2d_driver_lime_Asset.loadFiles = function(files,onProgress,onComplete) {
 					};
 				})(fileName1));
 			} else {
-				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 889, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
+				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 854, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
 				oge2d_driver_lime_Asset._queue.remove(fileName1[0]);
 				if(onProgress != null) {
 					onProgress(files.length - oge2d_driver_lime_Asset._queue.length,files.length);
@@ -29084,7 +29084,7 @@ oge2d_system_Tilemap.drawCell = function(scene,tilemap,viewX,viewY,viewZ,col,row
 				if(frameInterval > totalTicks + scene.game.interval) {
 					tile.ticks = totalTicks + scene.game.interval;
 				} else {
-					currentFrame = tile.offsetX.length % (currentFrame + 1);
+					currentFrame = (currentFrame + 1) % tile.offsetX.length;
 					offsetX = tile.offsetX[currentFrame];
 					offsetY = tile.offsetY[currentFrame];
 					tile.current = currentFrame;

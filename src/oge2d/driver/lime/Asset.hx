@@ -37,14 +37,8 @@ class Asset {
 	
 	#if cpp
 	
-	//static var _mutex: Mutex = null;
-	//static var _thread: Thread = null;
-	
-	static var _processing: Bool = false;
+	static var _tasks: List<Dynamic> = new List<Dynamic>();
 	static var _results: List<Dynamic> = new List<Dynamic>();
-	
-	//static var _mtx: Mutex = null;
-	static var _bgq: List<Dynamic> = new List<Dynamic>();
 	
 	#end
 	
@@ -65,13 +59,10 @@ class Asset {
 	#if cpp
 	public static function processPending() {
 		
-		var msg: Dynamic = null;
+		if (_tasks.length <= 0) return;
 		
-		if (_processing || _bgq.length <= 0) return; // no need to lock...
-		
-		msg = takeMessage();
+		var msg = takeMessage();
 		if (msg != null && msg.process != null) {
-			_processing = true;
 			var pending = {
 				result: null,
 				callback: null
@@ -80,46 +71,27 @@ class Asset {
 				pending.result = msg.process(msg.param);
 				pending.callback = msg.callback;
 			} catch (e: Dynamic) {
-				trace("Failed to process pending assets in thread: " + e);
+				trace("Failed to process pending assets: " + e);
 			}
-			//_mutex.acquire();
 			_results.add(pending);
-			//_mutex.release();
-			_processing = false;
-			//msg = takeMessage();
 		}
 		
-		if (_processing || _results.length <= 0) return; // no need to lock...
+		if (_results.length <= 0) return;
 		
-		//_mutex.acquire();
-		if (_results.length > 0) msg = _results.pop();
-		//_mutex.release();
-		if (msg != null && msg.callback != null) msg.callback(msg.result);
+		var res = _results.pop();
+		if (res != null && res.callback != null) res.callback(res.result);
 		
 	}
 	
 	
 	private static function takeMessage(): Dynamic {
-		//return Thread.readMessage(true);
-		
 		var msg = null;
-		//while (msg == null) {
-			//_mtx.acquire();
-			if (_bgq.length > 0) msg = _bgq.pop();
-			//_mtx.release();
-			//Sys.sleep(0.05);
-		//}
+		if (_tasks.length > 0) msg = _tasks.pop();
 		return msg;
-		
 	}
 	
-	
 	private static function postMessage(msg: Dynamic): Void {
-		//_thread.sendMessage(msg);
-		
-		//_mtx.acquire();
-		_bgq.add(msg);
-		//_mtx.release();
+		_tasks.add(msg);
 	}
 	
 	#end
@@ -144,14 +116,7 @@ class Asset {
 		
 		#if cpp
 		
-		// seems loading res in another thread still failed to work stably
-		// even in Haxe 3.3 + hxcpp 3.3.49  ...  T_T 
-		
-		// maybe need stress test for cpp.vm.Thread + cpp.vm.Mutex (+ cpp.vm.Gc) ??
-		
-		// (but current single thread version is fine)
-		
-		// -------------------------------------------------------------------------
+		// give up loading res in another thread (maybe lime + hxcpp still not ready for that?)
 		
 		//_mutex = new Mutex();
 		//_mtx = new Mutex();

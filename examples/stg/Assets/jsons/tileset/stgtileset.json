@@ -7,14 +7,14 @@
     {
       "id": 0,
       "offsetX": [
-        268
+        268, 301
       ],
       "offsetY": [
-        367
+        367, 367
       ],
-	  "ticks": 0,
-	  "current": 0,
-      "interval": 0
+      "ticks": 0,
+      "current": 0,
+      "interval": 300
     },
     {
       "id": 1,
@@ -24,11 +24,11 @@
       "offsetY": [
         367
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 2,
       "offsetX": [
         102
@@ -36,11 +36,11 @@
       "offsetY": [
         500
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 3,
       "offsetX": [
         134
@@ -48,11 +48,11 @@
       "offsetY": [
         500
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 4,
       "offsetX": [
         102
@@ -60,11 +60,11 @@
       "offsetY": [
         532
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 5,
       "offsetX": [
         134
@@ -72,11 +72,11 @@
       "offsetY": [
         532
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 6,
       "offsetX": [
         168
@@ -84,11 +84,11 @@
       "offsetY": [
         500
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 7,
       "offsetX": [
         200
@@ -96,11 +96,11 @@
       "offsetY": [
         500
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 8,
       "offsetX": [
         168
@@ -108,11 +108,11 @@
       "offsetY": [
         532
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 9,
       "offsetX": [
         200
@@ -120,11 +120,11 @@
       "offsetY": [
         532
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 10,
       "offsetX": [
         232
@@ -132,11 +132,11 @@
       "offsetY": [
         500
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 11,
       "offsetX": [
         264
@@ -144,11 +144,11 @@
       "offsetY": [
         500
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 12,
       "offsetX": [
         232
@@ -156,11 +156,11 @@
       "offsetY": [
         532
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     },
-	{
+    {
       "id": 13,
       "offsetX": [
         264
@@ -168,8 +168,8 @@
       "offsetY": [
         532
       ],
-	  "ticks": 0,
-	  "current": 0,
+      "ticks": 0,
+      "current": 0,
       "interval": 0
     }
   ]
