@@ -71,14 +71,33 @@ class Display implements Updater {
 	}
 	
 	public static function sortSpritesByPosition(scene: Scene) {
+		
 		if (scene == null) return;
 		
 		scene.sort(function(a, b) {
+			
+			// ...
+			// let's make some adjustments for current Haxe Array.sort() ...
+			/*
 			if (!a.enabled || !b.enabled) return 0;
 			var s1 = a.components["display"];
 			if (s1 == null || s1.visible == false) return 0;
 			var s2 = b.components["display"];
 			if (s2 == null || s2.visible == false) return 0;
+			*/
+			// ...
+			
+			var s1 = a.components["display"];
+			var s2 = b.components["display"];
+			
+			if (!a.enabled) s1 = null;
+			if (!b.enabled) s2 = null;
+			
+			if (s1 == null) return (s2 == null) ? 0 : -1;
+			if (s2 == null) return 1;
+			
+			// ...
+			
 			if (s1.posZ > s2.posZ) return 1;
 			else if (s1.posZ < s2.posZ) return -1;
 			else {
@@ -90,6 +109,7 @@ class Display implements Updater {
 				}
 			}
 			return 0;
+			
 		});
 		
 	}

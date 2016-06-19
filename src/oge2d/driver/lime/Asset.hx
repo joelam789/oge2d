@@ -116,7 +116,7 @@ class Asset {
 		
 		#if cpp
 		
-		// give up loading res in another thread (maybe lime + hxcpp still not ready for that?)
+		// for now, just going to give up loading res in another thread (maybe lime+hxcpp still not ready for that?)
 		
 		//_mutex = new Mutex();
 		//_mtx = new Mutex();
@@ -171,7 +171,9 @@ class Asset {
 				callback(null);
 			});
 		} else {
+			
 			#if flash
+			
 			var request: flash.net.URLRequest = new flash.net.URLRequest(url);
 			var urlLoader: flash.net.URLLoader = new flash.net.URLLoader(request);
 			urlLoader.dataFormat = flash.net.URLLoaderDataFormat.BINARY;
@@ -187,11 +189,12 @@ class Asset {
 				callback(null);
 			});
 			try {
-                urlLoader.load(request);
-            } catch (e: Dynamic) {
-                #if debug trace("Failed to load data via URLLoader: " + e); #end
+				urlLoader.load(request);
+			} catch (e: Dynamic) {
+				#if debug trace("Failed to load data via URLLoader: " + e); #end
 				callback(null);
-            }
+			}
+			
 			#elseif cpp
 			
 			/*
@@ -221,8 +224,11 @@ class Asset {
 			}
 			postMessage(msg);
 			
+			
 			#else
+			
 			callback(null); // not support
+			
 			#end
 		}
 	}

@@ -35,7 +35,7 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.load(urls,types);
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "81", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
+	ApplicationMain.config = { build : "140", company : "nobody", file : "ExampleStg", fps : 60, name : "Shooting Game", orientation : "", packageName : "ExampleStg", version : "1.0.0", windows : [{ antialiasing : 0, background : 16777215, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 480, parameters : "{}", resizable : true, stencilBuffer : false, title : "Shooting Game", vsync : false, width : 640, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	ApplicationMain.app.exec();
@@ -22857,7 +22857,7 @@ oge2d_driver_lime_Asset.loadJsonObject = function(url,callback) {
 				result = JSON.parse(text);
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 255, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 261, className : "oge2d.driver.lime.Asset", methodName : "loadJsonObject"});
 			}
 			if(callback != null) {
 				callback(result);
@@ -22885,7 +22885,7 @@ oge2d_driver_lime_Asset.loadJsonData = function(url,callback) {
 				result = JSON.parse(bytes.toString());
 			} catch( e ) {
 				if (e instanceof js__$Boot_HaxeError) e = e.val;
-				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 275, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
+				haxe_Log.trace("Failed to parse json: " + url + ", error: " + Std.string(e),{ fileName : "Asset.hx", lineNumber : 281, className : "oge2d.driver.lime.Asset", methodName : "loadJsonData"});
 			}
 			if(result != null) {
 				var _this1 = oge2d_driver_lime_Asset._jsons;
@@ -23466,7 +23466,7 @@ oge2d_driver_lime_Asset.loadFiles = function(files,onProgress,onComplete) {
 					};
 				})(fileName1));
 			} else {
-				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 854, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
+				haxe_Log.trace("Unsupported file to preload: " + fileName1[0],{ fileName : "Asset.hx", lineNumber : 860, className : "oge2d.driver.lime.Asset", methodName : "loadFiles"});
 				oge2d_driver_lime_Asset._queue.remove(fileName1[0]);
 				if(onProgress != null) {
 					onProgress(files.length - oge2d_driver_lime_Asset._queue.length,files.length);
@@ -27256,18 +27256,25 @@ oge2d_system_Display.sortSpritesByPosition = function(scene) {
 		return;
 	}
 	scene.sort(function(a,b) {
-		if(!a.enabled || !b.enabled) {
-			return 0;
-		}
 		var _this = a.components;
 		var s1 = __map_reserved.display != null?_this.getReserved("display"):_this.h["display"];
-		if(s1 == null || s1.visible == false) {
-			return 0;
-		}
 		var _this1 = b.components;
 		var s2 = __map_reserved.display != null?_this1.getReserved("display"):_this1.h["display"];
-		if(s2 == null || s2.visible == false) {
-			return 0;
+		if(!a.enabled) {
+			s1 = null;
+		}
+		if(!b.enabled) {
+			s2 = null;
+		}
+		if(s1 == null) {
+			if(s2 == null) {
+				return 0;
+			} else {
+				return -1;
+			}
+		}
+		if(s2 == null) {
+			return 1;
 		}
 		if(s1.posZ > s2.posZ) {
 			return 1;
@@ -27343,7 +27350,7 @@ oge2d_system_Display.setupDisplayBuffer = function(sprite,count) {
 				}
 				var tex = oge2d_driver_lime_Asset.getTexture(sprite.game.getImageFilePath(imgName));
 				if(tex == null) {
-					haxe_Log.trace("Failed to load texture: " + imgName,{ fileName : "Display.hx", lineNumber : 136, className : "oge2d.system.Display", methodName : "setupDisplayBuffer"});
+					haxe_Log.trace("Failed to load texture: " + imgName,{ fileName : "Display.hx", lineNumber : 156, className : "oge2d.system.Display", methodName : "setupDisplayBuffer"});
 				} else {
 					sprite.buffer = oge2d_driver_lime_RendererGL.createDisplayBuffer(tex,count);
 				}
