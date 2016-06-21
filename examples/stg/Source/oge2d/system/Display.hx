@@ -40,7 +40,7 @@ class Display implements Updater {
 			bound.right = bound.left + size.u * display.width * display.scaleX;
 			bound.bottom = bound.top + size.v * display.height * display.scaleY;
 		}
-		return bound; // just return a regular rect, do not support rotaion for now ...
+		return bound; // just return a regular rect, do not support rotation for now ...
 	}
 	
 	public static function getScreenBound(scene: Scene): Dynamic {
@@ -76,27 +76,13 @@ class Display implements Updater {
 		
 		scene.sort(function(a, b) {
 			
-			// ...
-			// let's make some adjustments for current Haxe Array.sort() ...
-			/*
-			if (!a.enabled || !b.enabled) return 0;
-			var s1 = a.components["display"];
-			if (s1 == null || s1.visible == false) return 0;
-			var s2 = b.components["display"];
-			if (s2 == null || s2.visible == false) return 0;
-			*/
-			// ...
+			if (!a.enabled) return 1;
+			if (a.enabled && !b.enabled) return -1;
 			
 			var s1 = a.components["display"];
+			if (s1 == null) return 1;
 			var s2 = b.components["display"];
-			
-			if (!a.enabled) s1 = null;
-			if (!b.enabled) s2 = null;
-			
-			if (s1 == null) return (s2 == null) ? 0 : -1;
-			if (s2 == null) return 1;
-			
-			// ...
+			if (s1 != null && s2 == null) return -1;
 			
 			if (s1.posZ > s2.posZ) return 1;
 			else if (s1.posZ < s2.posZ) return -1;
@@ -108,6 +94,7 @@ class Display implements Updater {
 					else if (s1.posX < s2.posX) return -1;
 				}
 			}
+			
 			return 0;
 			
 		});
