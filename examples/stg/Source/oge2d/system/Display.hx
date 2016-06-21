@@ -77,12 +77,12 @@ class Display implements Updater {
 		scene.sort(function(a, b) {
 			
 			if (!a.enabled) return 1;
-			if (a.enabled && !b.enabled) return -1;
+			if (!b.enabled) return -1;
 			
 			var s1 = a.components["display"];
 			if (s1 == null) return 1;
 			var s2 = b.components["display"];
-			if (s1 != null && s2 == null) return -1;
+			if (s2 == null) return -1;
 			
 			if (s1.posZ > s2.posZ) return 1;
 			else if (s1.posZ < s2.posZ) return -1;
